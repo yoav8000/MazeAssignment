@@ -27,6 +27,7 @@ namespace TheServer.TheModel
             this.mazeGenerator = new DFSMazeGenerator();
             this.algorithmFactory = new SearchAlgorithmFactory<Position>();
             this.singlePlayerMazes = new Dictionary<string, Maze>();
+            this.mazeSolutions = new Dictionary<string, Solution<Position>>();
             this.multiPlayerMazes = new Dictionary<string, Maze>();
             this.joinableMazes = new Dictionary<string, Maze>();
             this.activeMultiPlayerMazes = new Dictionary<string, Maze>();
@@ -103,7 +104,12 @@ namespace TheServer.TheModel
 
         public Maze GenerateteSinglePlayerMaze(string name, int rows, int cols)
         {
+            if (NameExistsInDictionary(singlePlayerMazes, name))
+            {
+                return null;
+            }
             Maze maze = this.GenerateMaze(name, rows, cols);
+            maze.Name = name;
             singlePlayerMazes[name] = maze;
             return maze;
         }
@@ -111,6 +117,7 @@ namespace TheServer.TheModel
         public Maze GenerateMultiPlayerMaze(string name, int rows, int cols)
         {
             Maze maze = this.GenerateMaze(name, rows, cols);
+            maze.Name = name;
             MultiPlayerMazes[name] = maze;
             JoinableMazes[name] = maze;
             return maze;

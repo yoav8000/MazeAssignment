@@ -15,14 +15,18 @@ namespace TheServer.TheController.Commands.MultiPlayerCommands
     {
         public JoinMazeCommand(IModel imodel):base(imodel) { }
 
-        public override string Execute(string[] args, TcpClient client)
+        public override string Execute(string[] args, TcpClient client=null)
         {
-            Maze maze = IModel.JoinMaze(args[0]);
-            JObject mazeObj = new JObject();
-            mazeObj["Name"] = maze.Name;
-            mazeObj["Rows"] = maze.Rows;
-            mazeObj["Cols"] = maze.Cols;
-            return JsonConvert.SerializeObject(IModel.JoinMaze(args[0]));
+            try
+            {
+                Maze maze = IModel.JoinMaze(args[0]);
+                maze.Name = args[0];
+                return maze.ToJSON();
+            }
+            catch(Exception e)
+            {
+                return $"there is no such maze with the name - {args[0]}";
+            }
         }
 
 
