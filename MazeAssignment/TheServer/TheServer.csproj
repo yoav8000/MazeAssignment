@@ -63,6 +63,7 @@
     <Compile Include="TheController\Commands\SinglePlayerCommands\SinglePlayerCommand.cs" />
     <Compile Include="TheController\Commands\SinglePlayerCommands\SolveMazeCommand.cs" />
     <Compile Include="TheModel\IModel.cs" />
+    <Compile Include="TheModel\Model.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
