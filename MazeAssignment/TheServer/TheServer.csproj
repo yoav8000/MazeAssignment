@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{99D48EDC-2644-4ED0-99EF-18923483E1D1}</ProjectGuid>
+    <ProjectGuid>{88F924BE-905A-4D74-BB72-237D2F0996DA}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>Part1</RootNamespace>
-    <AssemblyName>Part1</AssemblyName>
+    <RootNamespace>TheServer</RootNamespace>
+    <AssemblyName>TheServer</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -53,6 +53,16 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TheController\Commands\AbstractCommand.cs" />
+    <Compile Include="TheController\Commands\ICommand.cs" />
+    <Compile Include="TheController\Commands\MultiPlayerCommands\JoinMazeCommand.cs" />
+    <Compile Include="TheController\Commands\MultiPlayerCommands\ListJoinableMazesNamesCommand.cs" />
+    <Compile Include="TheController\Commands\MultiPlayerCommands\MultiPlayerCommand.cs" />
+    <Compile Include="TheController\Commands\MultiPlayerCommands\StartCommand.cs" />
+    <Compile Include="TheController\Commands\SinglePlayerCommands\GenerateSinglePlayerMazeCommand.cs" />
+    <Compile Include="TheController\Commands\SinglePlayerCommands\SinglePlayerCommand.cs" />
+    <Compile Include="TheController\Commands\SinglePlayerCommands\SolveMazeCommand.cs" />
+    <Compile Include="TheModel\IModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -63,6 +73,9 @@
       <Project>{37895f05-1f0a-41da-9602-3425dbf49cc1}</Project>
       <Name>SearchAlgorithmsLib</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="TheView\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SearchAlgorithmsLib", "Sear
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Part1", "Part1\Part1.csproj", "{99D48EDC-2644-4ED0-99EF-18923483E1D1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheServer", "TheServer\TheServer.csproj", "{88F924BE-905A-4D74-BB72-237D2F0996DA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{99D48EDC-2644-4ED0-99EF-18923483E1D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{99D48EDC-2644-4ED0-99EF-18923483E1D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{99D48EDC-2644-4ED0-99EF-18923483E1D1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88F924BE-905A-4D74-BB72-237D2F0996DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88F924BE-905A-4D74-BB72-237D2F0996DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88F924BE-905A-4D74-BB72-237D2F0996DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88F924BE-905A-4D74-BB72-237D2F0996DA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
