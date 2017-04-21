@@ -32,6 +32,8 @@ namespace TheServer.TheController
             get;
             set;
         }
+
+        ICommand GetCommand(string commandLine);
         
 
     }

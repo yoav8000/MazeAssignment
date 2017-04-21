@@ -65,6 +65,7 @@
     <Compile Include="TheController\Commands\SinglePlayerCommands\SolveMazeCommand.cs" />
     <Compile Include="TheController\Controller.cs" />
     <Compile Include="TheController\IController.cs" />
+    <Compile Include="TheMazeGame\Player.cs" />
     <Compile Include="TheModel\IModel.cs" />
     <Compile Include="TheModel\Model.cs" />
     <Compile Include="TheView\ClientHandler .cs" />

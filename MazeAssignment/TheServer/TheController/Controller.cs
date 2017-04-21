@@ -33,12 +33,18 @@ namespace TheServer.TheController
 
         public string ExecuteCommand(string commandLine, TcpClient client)
         {
+            ICommand command = GetCommand(commandLine);
+            if (command == null)
+            {
+                return "Command not found";
+            }
+            else
+            {
+
+            }
             string[] arr = commandLine.Split(' ');
             string commandKey = arr[0];
-            if (!commandsDictionary.ContainsKey(commandKey))
-                return "Command not found";
             string[] args = arr.Skip(1).ToArray();
-            ICommand command = commandsDictionary[commandKey];
             return command.Execute(args, client);
         }
 
@@ -77,6 +83,16 @@ namespace TheServer.TheController
             }
         }
 
+        public ICommand GetCommand(string commandLine)
+        {
+            string[] arr = commandLine.Split(' ');
+            string commandKey = arr[0];
+            if (!commandsDictionary.ContainsKey(commandKey))
+                return null;
+            string[] args = arr.Skip(1).ToArray();
+            ICommand command = commandsDictionary[commandKey];
+            return command;
 
+        }
     }
 }

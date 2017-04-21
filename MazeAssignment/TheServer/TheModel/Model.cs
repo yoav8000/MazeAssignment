@@ -7,6 +7,7 @@ using MazeLib;
 using MazeGeneratorLib;
 using SearchAlgorithmsLib;
 using Newtonsoft.Json.Linq;
+using TheServer.TheController;
 
 namespace TheServer.TheModel
 {
@@ -19,11 +20,12 @@ namespace TheServer.TheModel
         private Dictionary<string, Maze> multiPlayerMazes;
         private Dictionary<string, Maze> joinableMazes;
         private Dictionary<string, Maze> activeMultiPlayerMazes;
+        private IController icontroller;
 
 
-
-        public Model()
+        public Model(IController icontroller)
         {
+            this.icontroller = icontroller;
             this.mazeGenerator = new DFSMazeGenerator();
             this.algorithmFactory = new SearchAlgorithmFactory<Position>();
             this.singlePlayerMazes = new Dictionary<string, Maze>();
@@ -33,7 +35,16 @@ namespace TheServer.TheModel
             this.activeMultiPlayerMazes = new Dictionary<string, Maze>();
         }
 
-
+        public Model()///////////////////////for testing deleteeeeee later one!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        {
+            this.mazeGenerator = new DFSMazeGenerator();
+            this.algorithmFactory = new SearchAlgorithmFactory<Position>();
+            this.singlePlayerMazes = new Dictionary<string, Maze>();
+            this.mazeSolutions = new Dictionary<string, Solution<Position>>();
+            this.multiPlayerMazes = new Dictionary<string, Maze>();
+            this.joinableMazes = new Dictionary<string, Maze>();
+            this.activeMultiPlayerMazes = new Dictionary<string, Maze>();
+        }
 
         public Dictionary<string, Maze> MultiPlayerMazes
         {
@@ -210,7 +221,13 @@ namespace TheServer.TheModel
         }
 
 
-
+        public IController IController
+        {
+            get
+            {
+                return this.icontroller;
+            }
+        }
 
 
 

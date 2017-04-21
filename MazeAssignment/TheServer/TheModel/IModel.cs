@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using MazeGeneratorLib;
 using MazeLib;
 using SearchAlgorithmsLib;
-
+using TheServer.TheController;
 
 namespace TheServer.TheModel
 {
@@ -59,5 +59,9 @@ namespace TheServer.TheModel
             get;
         }
 
+        IController IController
+        {
+            get;
+        }
     }
 }
