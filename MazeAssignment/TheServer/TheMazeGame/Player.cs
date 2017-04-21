@@ -9,6 +9,7 @@ namespace TheServer.TheMazeGame
 {
     public class Player
     {
+        bool communicate;
         private bool needToWait;
         private string mazeName;
         private TcpClient client;
@@ -17,6 +18,7 @@ namespace TheServer.TheMazeGame
         public Player(string mazeName, TcpClient client = null)
         {
             this.needToWait = true;
+            this.communicate = true;
             this.mazeName = mazeName;
             this.client = client;
         }
@@ -24,11 +26,13 @@ namespace TheServer.TheMazeGame
         public Player(TcpClient client = null)
         {
             this.needToWait = true;
+            this.needToWait = true;
             this.mazeName = null;
             this.client = client;
         }
         public Player()
         {
+            this.needToWait = true;
             this.needToWait = true;
             this.mazeName = null;
             this.client = null;
@@ -47,6 +51,17 @@ namespace TheServer.TheMazeGame
             }
         }
 
+        public bool Communicate
+        {
+            get
+            {
+                return this.communicate; ;
+            }
+            set
+            {
+                this.communicate = value;
+            }
+        }
 
         public string MazeName
         {

@@ -32,18 +32,7 @@ namespace TheServer
             StartCommand start = new StartCommand(model);
            string result1 =  start.Execute(args1,p1);
 
-            string[] args2 = new string[3];
-            args2[0] = "BBB";
-            args2[1] = "10";
-            args2[2] = "10";
-            string result2 = start.Execute(args2, p1);
-
-            string[] args3 = new string[3];
-            args3[0] = "CCC";
-            args3[1] = "10";
-            args3[2] = "10";
-            string result3 = start.Execute(args2, p1);
-
+            
 
             string[] arg = new string[0];
             ListJoinableMazesNamesCommand list = new ListJoinableMazesNamesCommand(model);
@@ -52,11 +41,16 @@ namespace TheServer
 
 
             string[] args4 = new string[1];
-            args2[0] = "BLA";//test different amount and wrong args-maze name and different algo
+            args4[0] = "BLA";//test different amount and wrong args-maze name and different algo
             JoinMazeCommand join = new JoinMazeCommand(model);
-            string solution = join.Execute(args2, p2);
+            string solution = join.Execute(args4, p2);
             Console.WriteLine(solution);
 
+
+
+            CloseCommand close = new CloseCommand(model);
+            string result2 = close.Execute(args4, p2);
+            Console.WriteLine(result2);
 
 
 

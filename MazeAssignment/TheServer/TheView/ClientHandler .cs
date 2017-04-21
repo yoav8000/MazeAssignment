@@ -14,32 +14,66 @@ namespace TheServer.TheView
     class ClientHandler:IClientHandler
     {
         private IController icontroller;
+        private StreamReader streamReader;
+        private StreamWriter streamWriter;
+
 
         public ClientHandler(IController icontroller)
         {
             this.icontroller = icontroller;
         }
 
+        public StreamReader StreamReader
+        {
+            get
+            {
+                return this.streamReader;
+            }
+            set
+            {
+                this.streamReader = value;
+            }
+        }
+
+        public StreamWriter StreamWriter
+        {
+            get
+            {
+                return this.streamWriter;
+            }
+            set
+            {
+                this.streamWriter = value;
+            }
+        }
+
         public void HandleClient(Player player)
         {
+            NetworkStream stream = player.Client.GetStream();
+            StreamReader = new StreamReader(stream);
+            StreamWriter = new StreamWriter(stream);
             string currentCommand;
             new Task(() =>
             {
-                using (NetworkStream stream = player.Client.GetStream())
-                using (StreamReader reader = new StreamReader(stream))
-                using (StreamWriter writer = new StreamWriter(stream))
+                while (player.Communicate)
                 {
-                    string commandLine = reader.ReadLine();
+                    string commandLine = StreamReader.ReadLine();//recieve command from the client.
                     currentCommand = commandLine;
                     Console.WriteLine("Got command: {0}", commandLine);
-                    string result = icontroller.ExecuteCommand(commandLine, player);
-                    writer.Write(result);
+                    //got the command
+
+
+                    string result = icontroller.ExecuteCommand(commandLine, player);//executed it.
+
+
+                    StreamWriter.Write(result);//writes the result back to the client 
+                    if (IController.GetCommand(currentCommand) is SinglePlayerCommand)//check if the command has to be open.
+                    {
+                        StreamWriter.Write("close connection");
+                        player.Communicate = false;
+                    }
+                    currentCommand = null;
                 }
-                if (IController.GetCommand(currentCommand) is SinglePlayerCommand)
-                {
-                    player.Client.Close();
-                }
-                currentCommand = null;
             }).Start();
         }
 

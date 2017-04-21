@@ -48,7 +48,7 @@ namespace TheServer
                 Console.WriteLine("Server stopped");
             });
             task.Start();
-            task.Wait();// so that the main thread won't keep on going.    
+            task.Wait();// so that the main thread won't keep on going and exit.    
         }
 
         public void Stop()
