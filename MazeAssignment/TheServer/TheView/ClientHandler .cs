@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TheServer.TheController;
 using TheServer.TheController.Commands.SinglePlayerCommands;
+using TheServer.TheMazeGame;
 
 namespace TheServer.TheView
 {
@@ -19,34 +20,29 @@ namespace TheServer.TheView
             this.icontroller = icontroller;
         }
 
-        public void HandleClient(TcpClient client)
+        public void HandleClient(Player player)
         {
             string currentCommand;
             new Task(() =>
             {
-                using (NetworkStream stream = client.GetStream())
+                using (NetworkStream stream = player.Client.GetStream())
                 using (StreamReader reader = new StreamReader(stream))
                 using (StreamWriter writer = new StreamWriter(stream))
                 {
                     string commandLine = reader.ReadLine();
                     currentCommand = commandLine;
                     Console.WriteLine("Got command: {0}", commandLine);
-                    string result = icontroller.ExecuteCommand(commandLine, client);
+                    string result = icontroller.ExecuteCommand(commandLine, player);
                     writer.Write(result);
                 }
                 if (IController.GetCommand(currentCommand) is SinglePlayerCommand)
                 {
-                    client.Close();
+                    player.Client.Close();
                 }
                 currentCommand = null;
             }).Start();
         }
 
-        private void SendMessageToClient(string Message, TcpClient client)
-        {
-
-
-        }
 
 
 

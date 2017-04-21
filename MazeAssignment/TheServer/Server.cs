@@ -6,6 +6,8 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using TheServer.TheView;
+using TheServer.TheMazeGame;
+
 namespace TheServer
 {
     class Server
@@ -36,7 +38,7 @@ namespace TheServer
                     {
                         TcpClient client = listener.AcceptTcpClient();
                         Console.WriteLine("Got new connection");
-                        ch.HandleClient(client);
+                        ch.HandleClient(new Player(client));
                     }
                     catch (SocketException)
                     {

@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using TheServer.TheModel;
+using TheServer.TheMazeGame;
 
 namespace TheServer.TheController.Commands.SinglePlayerCommands
 {
@@ -12,8 +13,13 @@ namespace TheServer.TheController.Commands.SinglePlayerCommands
     {
         public SolveMazeCommand(IModel imodel) : base(imodel) { }
 
-        public override string Execute(string[] args, TcpClient client = null)
+        public override string Execute(string[] args, Player player)
         {
+            if (args.Length != 2)
+            {
+                return "Error: Incorrect number of arguments";
+            }
+
             string mazeName = args[0];
             int algorithmIndicator = -1;
             string theAlgorithm;
@@ -25,7 +31,7 @@ namespace TheServer.TheController.Commands.SinglePlayerCommands
 
             catch (FormatException exception)
             {
-                Console.WriteLine("Input string is not a sequence of digits.");
+                return "Error: The second argument isn't a number";
             }
             switch (algorithmIndicator)
             {
@@ -41,7 +47,7 @@ namespace TheServer.TheController.Commands.SinglePlayerCommands
                     }
                 default:
                     {
-                        throw new Exception($"there is no such algorithm in the search algorithm pool {algorithmIndicator}");
+                        return "Error: There is no such Algorithm";
                     }
             }
 

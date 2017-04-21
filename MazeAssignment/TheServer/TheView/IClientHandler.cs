@@ -6,14 +6,14 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using TheServer.TheController;
-
+using TheServer.TheMazeGame;
 
 
 namespace TheServer.TheView
 {
     public interface IClientHandler
     {
-        void HandleClient(TcpClient client);
+        void HandleClient(Player player);
 
         IController IController
         {

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,12 +7,11 @@ using Newtonsoft.Json;
 using TheServer.TheModel;
 using MazeLib;
 using TheServer.TheMazeGame;
-
 namespace TheServer.TheController.Commands.MultiPlayerCommands
 {
-    public class JoinMazeCommand:MultiPlayerCommand
+    class CloseCommand: MultiPlayerCommand
     {
-        public JoinMazeCommand(IModel imodel):base(imodel) { }
+        public CloseCommand(IModel imodel):base(imodel) { }
 
         public override string Execute(string[] args, Player player)
         {
@@ -22,19 +19,11 @@ namespace TheServer.TheController.Commands.MultiPlayerCommands
             {
                 return "Error: Incorrect number of arguments";
             }
-
-            try
-            {
-                Maze maze = IModel.JoinMaze(args[0],player);
-                return maze.ToJSON();
-            }
-            catch(Exception e)
-            {
-                return $"Error: There is no such maze with the name - {args[0]}";
-            }
+            IModel.Close(args[0]);
+            JObject jobject = new JObject();
+            return jobject.ToString();
         }
 
 
     }
 }
-

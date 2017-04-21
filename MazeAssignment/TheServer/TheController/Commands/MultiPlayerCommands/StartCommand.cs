@@ -5,14 +5,21 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using TheServer.TheModel;
-
+using TheServer.TheMazeGame;
+using MazeLib;
 namespace TheServer.TheController.Commands.MultiPlayerCommands
 {
     class StartCommand : MultiPlayerCommand
     {
         public StartCommand(IModel imodel):base(imodel){}
-        public override string Execute(string[] args, TcpClient client = null)
+
+        public override string Execute(string[] args, Player player)
         {
+            if (args.Length != 3)
+            {
+                return "Error: Incorrect number of arguments";
+            }
+
             string mazeName = args[0];
             int rows = 0;
             int cols = 0;
@@ -23,9 +30,15 @@ namespace TheServer.TheController.Commands.MultiPlayerCommands
             }
             catch (FormatException exception)
             {
-                Console.WriteLine("Input string is not a sequence of digits.");
+                return "Error: One of the second and third argument isn't a valid number";
             }
-            return IModel.GenerateMultiPlayerMaze(mazeName, rows, cols).ToJSON();
+            Maze maze = IModel.GenerateMultiPlayerMaze(mazeName, rows, cols, player);
+
+            if (maze == null)
+            {
+                return "Error: there is a maze with the same name";
+            }
+            return maze.ToJSON();
 
         }
 

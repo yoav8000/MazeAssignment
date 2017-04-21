@@ -76,7 +76,7 @@ namespace SearchAlgorithmsLib
                 }
             }
 
-            jobject["Path"] = sb.ToString();
+            jobject["Solution"] = sb.ToString();
             jobject["NodesEvaluated"] = Solution.NodesEvaluated;
 
             return jobject.ToString();

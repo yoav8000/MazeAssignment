@@ -8,6 +8,8 @@ using MazeGeneratorLib;
 using SearchAlgorithmsLib;
 using Newtonsoft.Json.Linq;
 using TheServer.TheController;
+using TheServer.TheMazeGame;
+using System.Net.Sockets;
 
 namespace TheServer.TheModel
 {
@@ -18,10 +20,9 @@ namespace TheServer.TheModel
         private SearchAlgorithmFactory<Position> algorithmFactory;
         private Dictionary<string, Maze> singlePlayerMazes;
         private Dictionary<string, Maze> multiPlayerMazes;
-        private Dictionary<string, Maze> joinableMazes;
-        private Dictionary<string, Maze> activeMultiPlayerMazes;
+        private Dictionary<string, MazeGame> joinableMazes;
         private IController icontroller;
-
+        private Dictionary<string, MazeGame> activeMultiPlayerMazes;
 
         public Model(IController icontroller)
         {
@@ -31,19 +32,19 @@ namespace TheServer.TheModel
             this.singlePlayerMazes = new Dictionary<string, Maze>();
             this.mazeSolutions = new Dictionary<string, Solution<Position>>();
             this.multiPlayerMazes = new Dictionary<string, Maze>();
-            this.joinableMazes = new Dictionary<string, Maze>();
-            this.activeMultiPlayerMazes = new Dictionary<string, Maze>();
+            this.joinableMazes = new Dictionary<string, MazeGame>();
+            this.activeMultiPlayerMazes = new Dictionary<string, MazeGame>();
         }
 
-        public Model()///////////////////////for testing deleteeeeee later one!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        public Model()///////////////////////for testing deleteeeeee later on!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         {
             this.mazeGenerator = new DFSMazeGenerator();
             this.algorithmFactory = new SearchAlgorithmFactory<Position>();
             this.singlePlayerMazes = new Dictionary<string, Maze>();
             this.mazeSolutions = new Dictionary<string, Solution<Position>>();
             this.multiPlayerMazes = new Dictionary<string, Maze>();
-            this.joinableMazes = new Dictionary<string, Maze>();
-            this.activeMultiPlayerMazes = new Dictionary<string, Maze>();
+            this.joinableMazes = new Dictionary<string, MazeGame>();
+            this.activeMultiPlayerMazes = new Dictionary<string, MazeGame>();
         }
 
         public Dictionary<string, Maze> MultiPlayerMazes
@@ -54,7 +55,7 @@ namespace TheServer.TheModel
             }
         }
 
-        public Dictionary<string, Maze> JoinableMazes
+        public Dictionary<string, MazeGame> JoinableMazes
         {
             get
             {
@@ -62,7 +63,7 @@ namespace TheServer.TheModel
             }
         }
 
-        public Dictionary<string, Maze> ActiveMultiPlayerMazes
+        public Dictionary<string, MazeGame> ActiveMultiPlayerMazes
         {
             get
             {
@@ -106,7 +107,16 @@ namespace TheServer.TheModel
             }
         }
 
-        public Maze GenerateMaze(string name, int rows, int cols)
+
+        public IController IController
+        {
+            get
+            {
+                return this.icontroller;
+            }
+        }
+
+        private Maze GenerateMaze(string name, int rows, int cols)
         {
             Maze maze = this.mazeGenerator.Generate(rows, cols);
             return maze;
@@ -125,12 +135,19 @@ namespace TheServer.TheModel
             return maze;
         }
 
-        public Maze GenerateMultiPlayerMaze(string name, int rows, int cols)
+        public Maze GenerateMultiPlayerMaze(string name, int rows, int cols,Player player)
         {
+            if ((joinableMazes.ContainsKey(name)) || (activeMultiPlayerMazes.ContainsKey(name)))
+            {
+                return null;
+            }
+            int playersCapacity = 2;
             Maze maze = this.GenerateMaze(name, rows, cols);
             maze.Name = name;
             MultiPlayerMazes[name] = maze;
-            JoinableMazes[name] = maze;
+            MazeGame game = new MazeGame(name, maze, playersCapacity);
+            JoinableMazes[name] = game;
+            game.AddPlayer(player);
             return maze;
         }
 
@@ -159,13 +176,16 @@ namespace TheServer.TheModel
             Solution<Position> solution = searchAlgorithm.Search(mazeAdapter);
             SolutionAdapter solutionAdapter = new SolutionAdapter(solution, mazeName);
             MazeSolutions[mazeName] = solution;
+            return solutionAdapter.ToJson();
+/*
             JObject jobject = new JObject();
             jobject["Name"] = mazeName;
-            jobject["Path"] = solutionAdapter.ToJson();
+            jobject["Solution"] = solutionAdapter.ToJson();
             jobject["NodesEvaluated"] = solutionAdapter.Solution.NodesEvaluated;//check if it is connected to the solutiion property
 
 
             return jobject.ToString();
+            */
         }
 
 
@@ -189,18 +209,20 @@ namespace TheServer.TheModel
 
 
 
-        public Maze JoinMaze(string mazeName)
+        public Maze JoinMaze(string mazeName, Player player)
         {
-            if (!NameExistsInDictionary(joinableMazes, mazeName))
+            if (!joinableMazes.ContainsKey(mazeName))
             {
                 throw new Exception($"there is no such maze with the name {mazeName}");
             }
 
             try
             {
-                ActiveMultiPlayerMazes[mazeName] = JoinableMazes[mazeName];
-                RemoveMazeFromJoinableMazes(mazeName);
-                return ActiveMultiPlayerMazes[mazeName];
+                MazeGame game = JoinableMazes[mazeName];
+                game.AddPlayer(player);
+                ActiveMultiPlayerMazes[mazeName] = game;
+                joinableMazes.Remove(mazeName);
+                return game.Maze;
 
             }
             catch (Exception exception)
@@ -211,25 +233,13 @@ namespace TheServer.TheModel
         }
 
 
-        private void RemoveMazeFromJoinableMazes(string name)
+        public void Close(string mazeName)
         {
-            if (!JoinableMazes.Remove(name))
-            {
-                throw new Exception("something went wrong with removing the maze from the joinable mazes list");
-            }
-
+            MazeGame game = ActiveMultiPlayerMazes[mazeName];//getting the game.
+            //update that the game was closed.
+            game.NotifyPlayers("the game was closed by one of the players");
+            //!!!!!!
+            activeMultiPlayerMazes.Remove(mazeName);
         }
-
-
-        public IController IController
-        {
-            get
-            {
-                return this.icontroller;
-            }
-        }
-
-
-
     }
 }

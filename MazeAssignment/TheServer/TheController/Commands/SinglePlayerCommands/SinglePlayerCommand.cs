@@ -5,13 +5,14 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using TheServer.TheModel;
+using TheServer.TheMazeGame;
 
 namespace TheServer.TheController.Commands.SinglePlayerCommands
 {
     public abstract class SinglePlayerCommand:AbstractCommand
     {
         public SinglePlayerCommand(IModel imodel):base(imodel) { }
-        public override abstract string Execute(string[] args, TcpClient client = null);
+        public override abstract string Execute(string[] args,Player player);
 
     }
 }

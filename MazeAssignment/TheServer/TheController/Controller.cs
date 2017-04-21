@@ -9,7 +9,7 @@ using TheServer.TheController.Commands.SinglePlayerCommands;
 using TheServer.TheController.Commands.MultiPlayerCommands;
 using TheServer.TheModel;
 using TheServer.TheView;
-
+using TheServer.TheMazeGame;
 
 
 namespace TheServer.TheController
@@ -31,7 +31,7 @@ namespace TheServer.TheController
             commandsDictionary.Add("list", new ListJoinableMazesNamesCommand(imodel));
         }
 
-        public string ExecuteCommand(string commandLine, TcpClient client)
+        public string ExecuteCommand(string commandLine, Player player)
         {
             ICommand command = GetCommand(commandLine);
             if (command == null)
@@ -45,7 +45,7 @@ namespace TheServer.TheController
             string[] arr = commandLine.Split(' ');
             string commandKey = arr[0];
             string[] args = arr.Skip(1).ToArray();
-            return command.Execute(args, client);
+            return command.Execute(args, player);
         }
 
 

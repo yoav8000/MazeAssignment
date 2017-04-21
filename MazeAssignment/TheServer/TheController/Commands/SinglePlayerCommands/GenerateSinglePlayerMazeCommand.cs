@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using MazeLib;
 using System.Net.Sockets;
 using TheServer.TheModel;
-
+using TheServer.TheMazeGame;
 
 namespace TheServer.TheController.Commands.SinglePlayerCommands
 {
@@ -15,17 +15,30 @@ namespace TheServer.TheController.Commands.SinglePlayerCommands
         public GenerateSinglePlayerMazeCommand(IModel model):base(model){}
 
 
-        public override string Execute(string[] args, TcpClient client=null)
+        public override string Execute(string[] args,Player player)
         {
+            if (args.Length != 3)
+            {
+                return "Error: Incorrect number of arguments";
+            }
             string name = args[0];
-            int rows = int.Parse(args[1]);
-            int cols = int.Parse(args[2]);
-            Maze maze = IModel.GenerateteSinglePlayerMaze(name, rows, cols);
+            try
+            {
+                int rows = Convert.ToInt32(args[1]);
+                int cols = Convert.ToInt32(args[2]);
+                  Maze maze = IModel.GenerateteSinglePlayerMaze(name, rows, cols);
             if(maze == null)
             {
-                return "There is a maze with that name";//the maze already exists.
+                return "Error: there is a maze with the same name";
             }
             return maze.ToJSON();
+            }
+            catch
+            {
+                return "Error: One of the second or third argument isn't a valid number";
+            }
+           
+          
         }
     }
 }

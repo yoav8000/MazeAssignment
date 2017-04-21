@@ -7,20 +7,19 @@ using MazeGeneratorLib;
 using MazeLib;
 using SearchAlgorithmsLib;
 using TheServer.TheController;
-
+using TheServer.TheMazeGame;
 namespace TheServer.TheModel
 {
     public interface IModel
     {
 
-        Maze GenerateMaze(string name, int rows, int cols);
-        Maze GenerateMultiPlayerMaze(string name, int rows, int cols);
+        Maze GenerateMultiPlayerMaze(string name, int rows, int cols, Player player);
         Maze GenerateteSinglePlayerMaze(string name, int rows, int cols);
         string SolveMaze(string mazeName, string algorithm);
         ISearcher<Position> GetAlgorithmAccordingToIndicator(string algorithmIndicator);
         List<string> GetNamesOfJoinableMazes();
-        Maze JoinMaze(string maze);
-
+        Maze JoinMaze(string maze, Player player);
+        void Close(string mazeName);
 
 
         SearchAlgorithmFactory<Position> AlgorithmFactory
@@ -44,12 +43,12 @@ namespace TheServer.TheModel
             get;
         }
 
-        Dictionary<string, Maze> JoinableMazes
+        Dictionary<string, MazeGame> JoinableMazes
         {
             get;
         }
 
-        Dictionary<string, Maze> ActiveMultiPlayerMazes
+        Dictionary<string, MazeGame> ActiveMultiPlayerMazes
         {
             get;
         }

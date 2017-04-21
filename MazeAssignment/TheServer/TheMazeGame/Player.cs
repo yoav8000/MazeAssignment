@@ -7,19 +7,33 @@ using System.Threading.Tasks;
 
 namespace TheServer.TheMazeGame
 {
-    class Player
+    public class Player
     {
         private bool needToWait;
         private string mazeName;
         private TcpClient client;
 
 
-        public Player(string mazeName, TcpClient client)
+        public Player(string mazeName, TcpClient client = null)
         {
             this.needToWait = true;
             this.mazeName = mazeName;
             this.client = client;
         }
+
+        public Player(TcpClient client = null)
+        {
+            this.needToWait = true;
+            this.mazeName = null;
+            this.client = client;
+        }
+        public Player()
+        {
+            this.needToWait = true;
+            this.mazeName = null;
+            this.client = null;
+        }
+
 
         public bool NeedToWait
         {
@@ -86,6 +100,16 @@ namespace TheServer.TheMazeGame
                         }
                 }  
             }
+        }
+
+        public void GetNotified(string message)//check if neccessery
+        {
+            return;
+        }
+
+        public bool Equals(Player other)
+        {
+            return this.Client.Equals(other.Client);
         }
 
 

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using TheServer.TheController.Commands;
 using TheServer.TheModel;
 using TheServer.TheView;
+using TheServer.TheMazeGame;
 
 namespace TheServer.TheController
 {
@@ -14,7 +15,7 @@ namespace TheServer.TheController
     {
         
 
-        string ExecuteCommand(string command, TcpClient client);
+        string ExecuteCommand(string command, Player player);
 
         Dictionary<string, ICommand> CommandDictionary
         {
