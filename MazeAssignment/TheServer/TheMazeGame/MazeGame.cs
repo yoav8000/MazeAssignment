@@ -9,15 +9,27 @@ using System.Net.Sockets;
 
 namespace TheServer.TheMazeGame
 {
-   public class MazeGame
+    /// <summary>
+    /// MazeGame class.
+    /// </summary>
+    public class MazeGame
     {
+        /// <summary>
+        /// The members.
+        /// </summary>
         private int gameCapacity;
         private List<Player> players;
         private string mazeName;
         private Maze maze;
-  
-       
 
+
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MazeGame"/> class.
+        /// </summary>
+        /// <param name="mazeName">Name of the maze.</param>
+        /// <param name="maze">The maze.</param>
+        /// <param name="gameCapacity">The game capacity.</param>
         public MazeGame(string mazeName,Maze maze, int gameCapacity)
         {
             this.players = new List<Player>();
@@ -26,6 +38,12 @@ namespace TheServer.TheMazeGame
             this.mazeName = mazeName;
         }
 
+        /// <summary>
+        /// Gets or sets the game capacity.
+        /// </summary>
+        /// <value>
+        /// The game capacity.
+        /// </value>
         public int GameCapacity//the minimum is 2 players
         {
             get
@@ -44,6 +62,12 @@ namespace TheServer.TheMazeGame
                 }
             }
         }
+        /// <summary>
+        /// Gets the maze.
+        /// </summary>
+        /// <value>
+        /// The maze.
+        /// </value>
         public Maze Maze
         {
             get
@@ -60,6 +84,12 @@ namespace TheServer.TheMazeGame
             }
         }
 
+        /// <summary>
+        /// Gets the players.
+        /// </summary>
+        /// <value>
+        /// The players.
+        /// </value>
         public List<Player> Players
         {
             get
@@ -68,37 +98,33 @@ namespace TheServer.TheMazeGame
             }
         }
 
+        /// <summary>
+        /// Adds the player.
+        /// </summary>
+        /// <param name="player">The player.</param>
         public void AddPlayer(Player player)
         {
             players.Add(player);
             
         }
 
+        /// <summary>
+        /// Removes the player.
+        /// </summary>
+        /// <param name="player">The player.</param>
         public void RemovePlayer(Player player)//need to override the equal method.
         {
             players.Remove(player);
         }
-        
-        public void WaitForPlayerToJoin()
-        {
-            foreach(Player p in players)
-            {
-                p.WaitForEvent("maze to reach capacity");
-            }
-        }
-
-        public void WaitForAPlayerToPlay(Player currentPlayer)//fix so that were stuck until player plays.
-        {
-            foreach(Player p in players)
-            {
-                if (!p.Equals(currentPlayer))
-                {
-                    p.WaitForEvent("other player to play");
-                }
-            }
-        }
 
 
+
+
+
+        /// <summary>
+        /// Notifies all players.
+        /// </summary>
+        /// <param name="message">The message.</param>
         public void NotifyAllPlayers(string message)
         {
          foreach(Player p in players)
@@ -108,6 +134,9 @@ namespace TheServer.TheMazeGame
             }  
         }
 
+        /// <summary>
+        /// Closes all clients.
+        /// </summary>
         public void CloseAllClients()
         {
             foreach (Player p in players)
@@ -119,6 +148,11 @@ namespace TheServer.TheMazeGame
 
 
 
+        /// <summary>
+        /// Notifies the other players.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        /// <param name="player">The player.</param>
         public void NotifyOtherPlayers(string message, Player player)
         {
             foreach (Player p in players)

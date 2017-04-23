@@ -13,6 +13,10 @@ using System.Net.Sockets;
 
 namespace TheServer.TheModel
 {
+    /// <summary>
+    /// class of the interface
+    /// </summary>
+    /// <seealso cref="TheServer.TheModel.IModel" />
     public class Model : IModel
     {
         private DFSMazeGenerator mazeGenerator;
@@ -24,8 +28,13 @@ namespace TheServer.TheModel
         private IController icontroller;
         private Dictionary<string, MazeGame> activeMultiPlayerMazes;
         private Dictionary<Player, MazeGame> playersAndGames;
+        private List<Player> playersThatWait;
 
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Model"/> class.
+        /// </summary>
+        /// <param name="icontroller">The icontroller.</param>
         public Model(IController icontroller)
         {
             this.icontroller = icontroller;
@@ -37,9 +46,10 @@ namespace TheServer.TheModel
             this.joinableMazes = new Dictionary<string, MazeGame>();
             this.activeMultiPlayerMazes = new Dictionary<string, MazeGame>();
             this.playersAndGames = new Dictionary<Player, MazeGame>();
+            this.playersThatWait = new List<Player>();
         }
 
-        public Model()///////////////////////for testing deleteeeeee later on!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        public Model()
         {
             this.mazeGenerator = new DFSMazeGenerator();
             this.algorithmFactory = new SearchAlgorithmFactory<Position>();
@@ -49,8 +59,15 @@ namespace TheServer.TheModel
             this.joinableMazes = new Dictionary<string, MazeGame>();
             this.activeMultiPlayerMazes = new Dictionary<string, MazeGame>();
             this.playersAndGames = new Dictionary<Player, MazeGame>();
+            this.playersThatWait = new List<Player>();
         }
 
+        /// <summary>
+        /// Gets or sets the i controller.
+        /// </summary>
+        /// <value>
+        /// The i controller.
+        /// </value>
         public IController IController
         {
             get
@@ -65,6 +82,12 @@ namespace TheServer.TheModel
 
 
 
+        /// <summary>
+        /// Gets the multi player mazes.
+        /// </summary>
+        /// <value>
+        /// The multi player mazes.
+        /// </value>
         public Dictionary<string, Maze> MultiPlayerMazes
         {
             get
@@ -73,6 +96,12 @@ namespace TheServer.TheModel
             }
         }
 
+        /// <summary>
+        /// Gets the joinable mazes.
+        /// </summary>
+        /// <value>
+        /// The joinable mazes.
+        /// </value>
         public Dictionary<string, MazeGame> JoinableMazes
         {
             get
@@ -81,6 +110,12 @@ namespace TheServer.TheModel
             }
         }
 
+        /// <summary>
+        /// Gets the active multi player mazes.
+        /// </summary>
+        /// <value>
+        /// The active multi player mazes.
+        /// </value>
         public Dictionary<string, MazeGame> ActiveMultiPlayerMazes
         {
             get
@@ -89,8 +124,14 @@ namespace TheServer.TheModel
             }
         }
 
-        
 
+
+        /// <summary>
+        /// Gets the single player mazes.
+        /// </summary>
+        /// <value>
+        /// The single player mazes.
+        /// </value>
         public Dictionary<string, Maze> SinglePlayerMazes
         {
             get
@@ -99,6 +140,12 @@ namespace TheServer.TheModel
             }
         }
 
+        /// <summary>
+        /// Gets the maze solutions.
+        /// </summary>
+        /// <value>
+        /// The maze solutions.
+        /// </value>
         public Dictionary<string, Solution<Position>> MazeSolutions
         {
             get
@@ -107,6 +154,12 @@ namespace TheServer.TheModel
             }
         }
 
+        /// <summary>
+        /// Gets the players and games.
+        /// </summary>
+        /// <value>
+        /// The players and games.
+        /// </value>
         public Dictionary<Player, MazeGame> PlayersAndGames
         {
             get
@@ -115,6 +168,12 @@ namespace TheServer.TheModel
             }
         }
 
+        /// <summary>
+        /// Gets the maze generator.
+        /// </summary>
+        /// <value>
+        /// The maze generator.
+        /// </value>
         public DFSMazeGenerator MazeGenerator
         {
             get
@@ -124,6 +183,12 @@ namespace TheServer.TheModel
         }
 
 
+        /// <summary>
+        /// Gets the algorithm factory.
+        /// </summary>
+        /// <value>
+        /// The algorithm factory.
+        /// </value>
         public SearchAlgorithmFactory<Position> AlgorithmFactory
         {
             get
@@ -133,8 +198,15 @@ namespace TheServer.TheModel
         }
 
 
-        
 
+
+        /// <summary>
+        /// Generates the maze.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="rows">The rows.</param>
+        /// <param name="cols">The cols.</param>
+        /// <returns></returns>
         private Maze GenerateMaze(string name, int rows, int cols)
         {
             Maze maze = this.mazeGenerator.Generate(rows, cols);
@@ -142,71 +214,104 @@ namespace TheServer.TheModel
         }
 
 
-        public Maze GenerateteSinglePlayerMaze(string name, int rows, int cols)
+        /// <summary>
+        /// Generatetes the single player maze.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="rows">The rows.</param>
+        /// <param name="cols">The cols.</param>
+        /// <param name="player">The player.</param>
+        /// <returns></returns>
+        /// <exception cref="System.Exception">there is another maze with the same name</exception>
+        public Maze GenerateteSinglePlayerMaze(string name, int rows, int cols, Player player)
         {
-            if (NameExistsInDictionary(singlePlayerMazes, name))
+            if (!playersThatWait.Contains(player))
             {
-                return null;
+                if (NameExistsInDictionary(singlePlayerMazes, name))
+                {
+                    throw new Exception("there is another maze with the same name");
+                }
+                Maze maze = this.GenerateMaze(name, rows, cols);
+                maze.Name = name;
+                singlePlayerMazes[name] = maze;
+                return maze;
             }
-            Maze maze = this.GenerateMaze(name, rows, cols);
-            maze.Name = name;
-            singlePlayerMazes[name] = maze;
-            return maze;
+            return null;
         }
 
-        public Maze GenerateMultiPlayerMaze(string name, int rows, int cols,Player player)
+        /// <summary>
+        /// Generates the multi player maze.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="rows">The rows.</param>
+        /// <param name="cols">The cols.</param>
+        /// <param name="player">The player.</param>
+        /// <returns></returns>
+        public string GenerateMultiPlayerMaze(string name, int rows, int cols,Player player)
         {
-            if ((joinableMazes.ContainsKey(name)) || (activeMultiPlayerMazes.ContainsKey(name)))
+            if (!playersThatWait.Contains(player))
             {
-                return null;
+                if ((joinableMazes.ContainsKey(name)) || (activeMultiPlayerMazes.ContainsKey(name)))
+                {
+                    return "Error: there is a maze with the same name";
+                }
+                int playersCapacity = 2;
+                Maze maze = this.GenerateMaze(name, rows, cols);
+                maze.Name = name;
+                MultiPlayerMazes[name] = maze;
+                MazeGame game = new MazeGame(name, maze, playersCapacity);
+                JoinableMazes[name] = game;
+               // player.NeedToWait = true;
+                game.AddPlayer(player);//the player needs to wait for another player to join the game.
+                playersThatWait.Add(player);
+                player.MazeName = game.MazeName;
+                return maze.ToJSON();
             }
-            int playersCapacity = 2;
-            Maze maze = this.GenerateMaze(name, rows, cols);
-            maze.Name = name;
-            MultiPlayerMazes[name] = maze;
-            MazeGame game = new MazeGame(name, maze, playersCapacity);
-            JoinableMazes[name] = game;
-            player.NeedToWait = true;
-            game.AddPlayer(player);//the player needs to wait for another player to join the game.
-            player.MazeName = game.MazeName;
-            return maze;
+            return null;
         }
 
 
+        /// <summary>
+        /// Names the exists in dictionary.
+        /// </summary>
+        /// <param name="dictionary">The dictionary.</param>
+        /// <param name="mazeName">Name of the maze.</param>
+        /// <returns></returns>
         private bool NameExistsInDictionary(Dictionary<string, Maze> dictionary, string mazeName)
         {
             return dictionary.ContainsKey(mazeName);
         }
 
-        public string SolveMaze(string mazeName, string algorithm)
+        /// <summary>
+        /// Solves the maze.
+        /// </summary>
+        /// <param name="mazeName">Name of the maze.</param>
+        /// <param name="algorithm">The algorithm.</param>
+        /// <param name="player">The player.</param>
+        /// <returns></returns>
+        public string SolveMaze(string mazeName, string algorithm, Player player)
         {
-
-            if (!NameExistsInDictionary(SinglePlayerMazes, mazeName))
+            if (!playersThatWait.Contains(player))
             {
-                throw new Exception($"there is no  maze with this name {mazeName}");
+                if (!NameExistsInDictionary(SinglePlayerMazes, mazeName))
+                {
+                    return ($"Error: there is no  maze with this name {mazeName}");
+                }
+
+                if (MazeExistsInSolutions(mazeName))
+                {
+                    SolutionAdapter solutionAdapter1 = new SolutionAdapter(MazeSolutions[mazeName], mazeName);
+                    return solutionAdapter1.ToJson();
+                }
+
+                MazeAdapter mazeAdapter = new MazeAdapter(SinglePlayerMazes[mazeName]);
+                ISearcher<Position> searchAlgorithm = GetAlgorithmAccordingToIndicator(algorithm);
+                Solution<Position> solution = searchAlgorithm.Search(mazeAdapter);
+                SolutionAdapter solutionAdapter = new SolutionAdapter(solution, mazeName);
+                MazeSolutions[mazeName] = solution;
+                return solutionAdapter.ToJson();
             }
-
-            if (MazeExistsInSolutions(mazeName))
-            {
-                SolutionAdapter solutionAdapter1 = new SolutionAdapter(MazeSolutions[mazeName], mazeName);
-                return solutionAdapter1.ToJson();
-            }
-
-            MazeAdapter mazeAdapter = new MazeAdapter(SinglePlayerMazes[mazeName]);
-            ISearcher<Position> searchAlgorithm = GetAlgorithmAccordingToIndicator(algorithm);
-            Solution<Position> solution = searchAlgorithm.Search(mazeAdapter);
-            SolutionAdapter solutionAdapter = new SolutionAdapter(solution, mazeName);
-            MazeSolutions[mazeName] = solution;
-            return solutionAdapter.ToJson();
-/*
-            JObject jobject = new JObject();
-            jobject["Name"] = mazeName;
-            jobject["Solution"] = solutionAdapter.ToJson();
-            jobject["NodesEvaluated"] = solutionAdapter.Solution.NodesEvaluated;//check if it is connected to the solutiion property
-
-
-            return jobject.ToString();
-            */
+            return null;
         }
 
 
@@ -222,94 +327,138 @@ namespace TheServer.TheModel
         }
 
 
-        public List<string> GetNamesOfJoinableMazes()
+        public List<string> GetNamesOfJoinableMazes(Player player)
         {
-            List<string> mazesList = new List<string>(JoinableMazes.Keys.ToList());
-            return mazesList;
+            if (!playersThatWait.Contains(player))
+            {
+                List<string> mazesList = new List<string>(JoinableMazes.Keys.ToList());
+                return mazesList;
+            }
+            return null;
         }
 
 
 
+        /// <summary>
+        /// Joins the maze.
+        /// </summary>
+        /// <param name="mazeName">Name of the maze.</param>
+        /// <param name="player">The player.</param>
+        /// <returns></returns>
+        /// <exception cref="System.Exception"></exception>
         public Maze JoinMaze(string mazeName, Player player)
         {
-            if (!joinableMazes.ContainsKey(mazeName))
+            if (!playersThatWait.Contains(player))
             {
-                throw new Exception($"there is no such maze with the name {mazeName}");
-            }
-
-            try
-            {
-                MazeGame game = JoinableMazes[mazeName];
-                game.AddPlayer(player);
-                player.MazeName = game.MazeName;
-                game.NotifyOtherPlayers("a player joined the game", player);
-                if (game.GameCapacity == game.Players.Count)
+                if (!joinableMazes.ContainsKey(mazeName))
                 {
-                    ActiveMultiPlayerMazes[mazeName] = game;
-                    joinableMazes.Remove(mazeName);
-                    ReleasePlayerFromWaitingMode(game);
+                    throw new Exception($"there is no such maze with the name {mazeName}");
                 }
-                return game.Maze;
 
-            }
-            catch (Exception exception)
-            {
-                return null;
-            }
+                try
+                {
+                    MazeGame game = JoinableMazes[mazeName];
+                    game.AddPlayer(player);
+                    player.MazeName = game.MazeName;
+                    game.NotifyOtherPlayers("a player joined the game", player);
 
+                    if (game.GameCapacity == game.Players.Count)
+                    {
+                        ActiveMultiPlayerMazes[mazeName] = game;
+                        joinableMazes.Remove(mazeName);
+                        ReleasePlayerFromWaitingMode(game);
+                        game.NotifyOtherPlayers(game.Maze.ToJSON(), player);
+                        game.NotifyAllPlayers("The Game Has Started");
+                    }
+                    return game.Maze;
+
+                }
+                catch (Exception exception)
+                {
+                    return null;
+                }
+            }
+            return null;
         }
 
-        private void ReleasePlayerFromWaitingMode(MazeGame game)
+        private void ReleasePlayerFromWaitingMode(MazeGame game)//////////////////////////added a change.
         {
             foreach(Player p in game.Players)
             {
+                if (playersThatWait.Contains(p)){//check
+                    playersThatWait.Remove(p);
+                }
+                PlayersAndGames[p] = game;
 
-                PlayersAndGames[p] = game;//adds the players as a key to the dictionary and the mazegame as the value.
-                p.NeedToWait = false;
-                p.Message = "The Game Has Started";
-                p.NeedToBeNotified = true;   
+              //  p.NeedToWait = false;
             }
 
         }
 
 
-       public string Play(string []args, Player player)
+        /// <summary>
+        /// Plays the specified arguments.
+        /// </summary>
+        /// <param name="args">The arguments.</param>
+        /// <param name="player">The player.</param>
+        /// <returns></returns>
+        public string Play(string []args, Player player)
         {
-            string direction = args[0];
-            if(player.MazeName == null)
+            if (!playersThatWait.Contains(player))
             {
-                return "Error: you are not a part of an active game";
+                string direction = args[0];
+                if (player.MazeName == null)
+                {
+                    return "Error: you are not a part of an active game";
 
+                }
+                string mazeName = player.MazeName;
+                if (!ActiveMultiPlayerMazes.ContainsKey(mazeName))
+                {
+                    return $"Error: there is no such maze with the name {mazeName}";
+                }
+                if (PlayersAndGames[player] == null)
+                {
+                    return ("Error: you are not a part of a game at this point ");
+                }
+                MazeGame game = ActiveMultiPlayerMazes[mazeName];
+                JObject jobject = new JObject();
+                jobject["Name"] = game.MazeName;
+                jobject["Direction"] = direction;
+                game.NotifyOtherPlayers(jobject.ToString(), player);
+                return "";
             }
-            string mazeName = player.MazeName;
-            if (!ActiveMultiPlayerMazes.ContainsKey(mazeName))
-            {
-                return $"Error: there is no such maze with the name {mazeName}";
-            }
-            if(PlayersAndGames[player] == null)
-            {
-                return ("Error: you are not a part of a game at this point ");
-            }
-            MazeGame game = ActiveMultiPlayerMazes[mazeName];
-            game.NotifyOtherPlayers($"the other player moved  {direction}", player);
-            return "";
+            return null;
         }
 
-        public string Close(string mazeName)
+        /// <summary>
+        /// Closes the specified maze name.
+        /// </summary>
+        /// <param name="mazeName">Name of the maze.</param>
+        /// <param name="player">The player.</param>
+        /// <returns></returns>
+        public string Close(string mazeName, Player player)
         {
-            if (!ActiveMultiPlayerMazes.ContainsKey(mazeName))
+            if (!playersThatWait.Contains(player))
             {
-                return $"Error: there is no such maze to close named {mazeName}";
+                if (!ActiveMultiPlayerMazes.ContainsKey(mazeName))
+                {
+                    return $"Error: there is no such maze to close named {mazeName}";
+                }
+                MazeGame game = ActiveMultiPlayerMazes[mazeName];//getting the game.
+                game.NotifyAllPlayers("The Game Was Closed");
+                RemovePlayersFromPlayersAndGames(mazeName); //getting the players of the dictionary of the players and games
+                game.CloseAllClients();
+                activeMultiPlayerMazes.Remove(mazeName);
+                return "";
             }
-            MazeGame game = ActiveMultiPlayerMazes[mazeName];//getting the game.
-            game.NotifyAllPlayers("The Game Was Closed");
-            RemovePlayersFromPlayersAndGames(mazeName); //getting the players of the dictionary of the players and games
-            game.CloseAllClients();
-            activeMultiPlayerMazes.Remove(mazeName);
-            return "";
-
+            return null;
         }
 
+        /// <summary>
+        /// Removes the players from players and games.
+        /// </summary>
+        /// <param name="mazeName">Name of the maze.</param>
         private void RemovePlayersFromPlayersAndGames(string mazeName)
         {
             MazeGame game = ActiveMultiPlayerMazes[mazeName];

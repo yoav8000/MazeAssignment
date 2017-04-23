@@ -6,9 +6,19 @@ using System.Threading.Tasks;
 
 namespace SearchAlgorithmsLib
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <seealso cref="SearchAlgorithmsLib.StackBasedSearcher{T}" />
     public class DfsSearcher<T> : StackBasedSearcher<T>
     {
 
+        /// <summary>
+        /// Searches the specified searchable.
+        /// </summary>
+        /// <param name="searchable">The searchable.</param>
+        /// <returns></returns>
         public override Solution<T> Search(ISearchable<T> searchable)// Searcher's abstract method overriding
         {
             State<T> initialState = searchable.GetInitialState();

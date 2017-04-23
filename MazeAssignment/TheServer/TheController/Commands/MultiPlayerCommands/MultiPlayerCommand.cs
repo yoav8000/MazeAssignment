@@ -8,10 +8,24 @@ using TheServer.TheModel;
 using TheServer.TheMazeGame;
 namespace TheServer.TheController.Commands.MultiPlayerCommands
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <seealso cref="TheServer.TheController.Commands.AbstractCommand" />
     public abstract class MultiPlayerCommand:AbstractCommand
     {
-       public MultiPlayerCommand(IModel imodel):base(imodel) { }
-       public override abstract string Execute(string[] args, Player player);
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MultiPlayerCommand"/> class.
+        /// </summary>
+        /// <param name="imodel">The imodel.</param>
+        public MultiPlayerCommand(IModel imodel):base(imodel) { }
+        /// <summary>
+        /// Executes the specified arguments.
+        /// </summary>
+        /// <param name="args">The arguments.</param>
+        /// <param name="player">The player.</param>
+        /// <returns></returns>
+        public override abstract string Execute(string[] args, Player player);
 
     }
 }

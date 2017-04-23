@@ -11,17 +11,29 @@ using TheServer.TheMazeGame;
 
 namespace TheServer.TheView
 {
-    class ClientHandler:IClientHandler
+    /// <summary>
+    /// ClientHandler class.
+    /// </summary>
+    /// <seealso cref="TheServer.TheView.IClientHandler" />
+    class ClientHandler :IClientHandler
     {
         private IController icontroller;
 
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ClientHandler"/> class.
+        /// </summary>
+        /// <param name="icontroller">The icontroller.</param>
         public ClientHandler(IController icontroller)
         {
             this.icontroller = icontroller;
         }
 
-     
+
+        /// <summary>
+        /// Handles the client.
+        /// </summary>
+        /// <param name="player">The player.</param>
         public void HandleClient(Player player)
         {
          
@@ -43,27 +55,31 @@ namespace TheServer.TheView
 
 
                         string result = icontroller.ExecuteCommand(commandLine, player);//executed it.
-
-                        Console.WriteLine($"the result is: {result}");
-
-                        streamWriter.WriteLine(result);//writes the result back to the client 
-                        streamWriter.Flush();
-                        if (player.NeedToWait)
+                        if (result != "wait")
                         {
-                            WaitForOtherPlayerToJoin(player, streamWriter);
+                            Console.WriteLine($"the result is: {result}");
+                           
+                            streamWriter.WriteLine(result);//writes the result back to the client 
+                            streamWriter.Flush();
+
+                            if (player.NeedToBeNotified)
+                            {
+                                SendOponentPlayedMessage(player, streamWriter);
+                            }
+
+
+
+                            if (IController.GetCommand(commandLine) is SinglePlayerCommand)//check if the command has to be open.
+                            {
+                                System.Threading.Thread.Sleep(1000);
+                                player.Communicate = false;
+                                player.Client.Close();
+                            }
                         }
-                        if (player.NeedToBeNotified)
+                        else
                         {
-                            SendOponentPlayedMessage(player, streamWriter);
-                        }
-
-
-
-                        if (IController.GetCommand(commandLine) is SinglePlayerCommand)//check if the command has to be open.
-                        {
-                            System.Threading.Thread.Sleep(1000);
-                            player.Communicate = false;
-                            player.Client.Close();
+                            streamWriter.WriteLine("wait");//writes the result back to the client 
+                            streamWriter.Flush();
                         }
                     }
                     catch
@@ -78,6 +94,11 @@ namespace TheServer.TheView
             }).Start();
         }
 
+        /// <summary>
+        /// Waits for other player to join.
+        /// </summary>
+        /// <param name="player">The player.</param>
+        /// <param name="streamWriter">The stream writer.</param>
         private void WaitForOtherPlayerToJoin(Player player, StreamWriter streamWriter)
         {
             streamWriter.WriteLine("wait");//writes the result back to the client 
@@ -90,6 +111,11 @@ namespace TheServer.TheView
 
         }
 
+        /// <summary>
+        /// Sends the oponent played message.
+        /// </summary>
+        /// <param name="player">The player.</param>
+        /// <param name="streamWriter">The stream writer.</param>
         private void SendOponentPlayedMessage(Player player, StreamWriter streamWriter)
         {
             string message = player.Message;
@@ -101,6 +127,12 @@ namespace TheServer.TheView
 
 
 
+        /// <summary>
+        /// Gets the i controller.
+        /// </summary>
+        /// <value>
+        /// The i controller.
+        /// </value>
         public IController IController
         {
             get

@@ -6,22 +6,41 @@ using System.Threading.Tasks;
 
 namespace SearchAlgorithmsLib
 {
+    /// <summary>
+    /// bfs searcher
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <seealso cref="SearchAlgorithmsLib.PrioritySearcher{T}" />
     public class BfsSearcher<T> : PrioritySearcher<T>
     {
         private IComparer<State<T>> comparer;
         private int searchableCapacity;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BfsSearcher{T}"/> class.
+        /// </summary>
+        /// <param name="comparer1">The comparer1.</param>
+        /// <param name="capacity1">The capacity1.</param>
         public BfsSearcher(IComparer<State<T>> comparer1, int capacity1) : base(capacity1, comparer1)
         {
             this.comparer = comparer1;
             this.searchableCapacity = capacity1;
         }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BfsSearcher{T}"/> class.
+        /// </summary>
+        /// <param name="comparer1">The comparer1.</param>
         public BfsSearcher(IComparer<State<T>> comparer1) : base(10000, comparer1)
         {
             this.comparer = comparer1;
             this.searchableCapacity = 10000;
         }
 
+        /// <summary>
+        /// Searches the specified searchable.
+        /// </summary>
+        /// <param name="searchable">The searchable.</param>
+        /// <returns></returns>
         public override Solution<T> Search(ISearchable<T> searchable)// Searcher's abstract method overriding
         {
             State<T> initialState = searchable.GetInitialState();

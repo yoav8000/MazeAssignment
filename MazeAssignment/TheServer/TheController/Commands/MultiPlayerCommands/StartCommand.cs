@@ -9,10 +9,24 @@ using TheServer.TheMazeGame;
 using MazeLib;
 namespace TheServer.TheController.Commands.MultiPlayerCommands
 {
+    /// <summary>
+    /// StartCommand class.
+    /// </summary>
+    /// <seealso cref="TheServer.TheController.Commands.MultiPlayerCommands.MultiPlayerCommand" />
     class StartCommand : MultiPlayerCommand
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StartCommand"/> class.
+        /// </summary>
+        /// <param name="imodel">The imodel.</param>
         public StartCommand(IModel imodel):base(imodel){}
 
+        /// <summary>
+        /// Executes the specified arguments.
+        /// </summary>
+        /// <param name="args">The arguments.</param>
+        /// <param name="player">The player.</param>
+        /// <returns></returns>
         public override string Execute(string[] args, Player player)
         {
             if (args.Length != 3)
@@ -32,13 +46,14 @@ namespace TheServer.TheController.Commands.MultiPlayerCommands
             {
                 return "Error: One of the second and third argument isn't a valid number";
             }
-            Maze maze = IModel.GenerateMultiPlayerMaze(mazeName, rows, cols, player);
-
-            if (maze == null)
+            string result = IModel.GenerateMultiPlayerMaze(mazeName, rows, cols, player);
+            if (result == null)
             {
-                return "Error: there is a maze with the same name";
+                return result;
+            }else if (result.StartsWith("Error")){
+                return result;
             }
-            return maze.ToJSON();
+            return "wait";
 
         }
 

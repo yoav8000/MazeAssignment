@@ -6,16 +6,28 @@ using System.Threading.Tasks;
 
 namespace SearchAlgorithmsLib
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <seealso cref="SearchAlgorithmsLib.ISearcher{T}" />
     public abstract class Searcher<T> : ISearcher<T>
     {
         protected int nodesEvaluated;
 
+        /// <summary>
+        /// Increases the nodes evaluated.
+        /// </summary>
         public void IncreaseNodesEvaluated()
         {
             ++this.nodesEvaluated;
         }
 
 
+        /// <summary>
+        /// Gets the number of nodes evaluated.
+        /// </summary>
+        /// <returns></returns>
         public int GetNumberOfNodesEvaluated()
         {
             return this.nodesEvaluated;
@@ -30,6 +42,7 @@ namespace SearchAlgorithmsLib
         /// <summary>
         /// Backtraces the specified goal.
         /// </summary>
+        /// backtraces to the initial state and returns a new solution.
         /// <param name="goal">The goal.</param>
         /// <returns></returns>
         protected Solution<T> Backtrace(State<T> goal, int nodesEvaluated)

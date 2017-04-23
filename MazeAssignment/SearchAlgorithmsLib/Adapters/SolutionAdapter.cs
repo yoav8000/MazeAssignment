@@ -8,6 +8,9 @@ using Newtonsoft.Json.Linq;
 
 namespace SearchAlgorithmsLib
 {
+    /// <summary>
+    /// solution adapter
+    /// </summary>
     public class SolutionAdapter
     {
         private Solution<Position> solution;
@@ -15,12 +18,23 @@ namespace SearchAlgorithmsLib
 
 
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SolutionAdapter"/> class.
+        /// </summary>
+        /// <param name="solution1">The solution1.</param>
+        /// <param name="name1">The name1.</param>
         public SolutionAdapter(Solution<Position> solution1, string name1 = null)
         {
             this.solution = solution1;
             this.name = name1;
         }
 
+        /// <summary>
+        /// Gets or sets the name.
+        /// </summary>
+        /// <value>
+        /// The name.
+        /// </value>
         public string Name
         {
             get
@@ -33,6 +47,12 @@ namespace SearchAlgorithmsLib
             }
         }
 
+        /// <summary>
+        /// Gets the solution.
+        /// </summary>
+        /// <value>
+        /// The solution.
+        /// </value>
         public Solution<Position> Solution
         {
             get
@@ -43,6 +63,10 @@ namespace SearchAlgorithmsLib
 
 
 
+        /// <summary>
+        /// To the json.
+        /// </summary>
+        /// <returns></returns>
         public string ToJson()
         {
 

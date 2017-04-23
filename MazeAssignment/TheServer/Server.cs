@@ -10,6 +10,9 @@ using TheServer.TheMazeGame;
 
 namespace TheServer
 {
+    /// <summary>
+    /// Server class.
+    /// </summary>
     class Server
     {
         private int port;
@@ -17,6 +20,11 @@ namespace TheServer
         private IClientHandler ch;
 
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Server"/> class.
+        /// </summary>
+        /// <param name="port">The port.</param>
+        /// <param name="ch">The ch.</param>
         public Server(int port, IClientHandler ch)
         {
             this.port = port;
@@ -24,6 +32,9 @@ namespace TheServer
         }
 
 
+        /// <summary>
+        /// Starts this instance.
+        /// </summary>
         public void Start()
         {
             IPEndPoint ep = new IPEndPoint(IPAddress.Parse("127.0.0.1"), port);
@@ -52,6 +63,9 @@ namespace TheServer
             task.Wait();// so that the main thread won't keep on going and exit.    
         }
 
+        /// <summary>
+        /// Stops this instance.
+        /// </summary>
         public void Stop()
         {
             listener.Stop();

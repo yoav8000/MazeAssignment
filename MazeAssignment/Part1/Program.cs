@@ -10,6 +10,10 @@ namespace Part1
 {
     class Program
     {
+        /// <summary>
+        /// Mains the specified arguments.
+        /// </summary>
+        /// <param name="args">The arguments.</param>
         static void Main(string[] args)
         {
             string json = @"{
@@ -30,7 +34,6 @@ namespace Part1
             Maze maze = Maze.FromJSON(json);
 
             DFSMazeGenerator mazeGen = new DFSMazeGenerator();
-            // Maze maze = mazeGen.Generate(10,10);
             Console.WriteLine(maze.ToString());
             MazeAdapter mazeAdapter = new MazeAdapter(maze);
             SearchAlgorithmFactory<Position> factory = new SearchAlgorithmFactory<Position>();

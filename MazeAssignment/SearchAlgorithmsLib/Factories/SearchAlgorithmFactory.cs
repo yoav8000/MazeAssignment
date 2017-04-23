@@ -6,9 +6,19 @@ using System.Threading.Tasks;
 
 namespace SearchAlgorithmsLib
 {
+    /// <summary>
+    /// a factory of algorithms.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class SearchAlgorithmFactory<T>
     {
 
+        /// <summary>
+        /// Gets the search algorithm.
+        /// </summary>
+        /// <param name="algorithm">The algorithm.</param>
+        /// <returns></returns>
+        /// <exception cref="System.Exception">there is no such search algorithm in the factory!</exception>
         public ISearcher<T> GetSearchAlgorithm(string algorithm)
         {
             switch (algorithm.ToLower())

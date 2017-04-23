@@ -9,18 +9,28 @@ using System.Threading.Tasks;
 
 namespace TheClient
 {
+    /// <summary>
+    /// Client class
+    /// </summary>
     class Client
     {
+        /// <summary>
+        /// The members
+        /// </summary>
         private bool communicate;
         private NetworkStream stream;
         private StreamReader streamReader;
         private StreamWriter streamWriter;
         private TcpClient theClient;
-        private bool waitForOtherPlayer;
         private IPEndPoint ep;
         private int portNumber;
 
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Client"/> class.
+        /// </summary>
+        /// <param name="ep">The ep.</param>
+        /// <param name="portNumber">The port number.</param>
         public Client(IPEndPoint ep, int portNumber)
         {
             this.ep = ep;
@@ -28,11 +38,17 @@ namespace TheClient
             CreateANewConnection();
             communicate = true;
             streamWriter.AutoFlush = true;
-            waitForOtherPlayer = false;
+            
 
         }
 
 
+        /// <summary>
+        /// Gets or sets the client.
+        /// </summary>
+        /// <value>
+        /// The client.
+        /// </value>
         public TcpClient TheClient
         {
             get
@@ -46,6 +62,12 @@ namespace TheClient
             }
         }
 
+        /// <summary>
+        /// Gets or sets the stream reader.
+        /// </summary>
+        /// <value>
+        /// The stream reader.
+        /// </value>
         public StreamReader StreamReader
         {
             get
@@ -58,6 +80,12 @@ namespace TheClient
             }
         }
 
+        /// <summary>
+        /// Gets or sets the stream writer.
+        /// </summary>
+        /// <value>
+        /// The stream writer.
+        /// </value>
         public StreamWriter StreamWriter
         {
             get
@@ -70,6 +98,12 @@ namespace TheClient
             }
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether this <see cref="Client"/> is communicate.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if communicate; otherwise, <c>false</c>.
+        /// </value>
         public bool Communicate
         {
             get
@@ -86,16 +120,14 @@ namespace TheClient
             try
             {
                 string result = StreamReader.ReadLine();
-
-                if (result != null)
+                if (result.Equals("wait"))/// the player awaits for other player to join.
                 {
-                    if (result.Equals("wait"))
-                    {
-                        Console.WriteLine("wait");
-                        this.waitForOtherPlayer = true;
-                        
-                        result = "";
-                    }
+                    Console.WriteLine("waiting for a player to join");
+                }
+
+                else if (result!=null)
+                {
+                   
                     Console.WriteLine(result);
                     string[] arr;
                     arr = result.Split(' ');
@@ -103,83 +135,57 @@ namespace TheClient
                     {
                         Console.WriteLine("there was an error please type another command ");
                     }
-                }
-                else
-                {
-                    communicate = false;
+
+
                 }
             }
+
             catch
             {
                 communicate = false;
+              
             }
         }
 
 
 
 
-
-
-
-
+        /// <summary>
+        /// Writes the message.
+        /// </summary>
         public void WriteMessage()
         {
-            if (!waitForOtherPlayer)
+
+            Console.WriteLine("Please enter a command: ");
+
+            string command = Console.ReadLine();
+            if (command != null && command != " ")
             {
-                Console.WriteLine("Please enter a command: ");
-               
-                string command = Console.ReadLine();
+                Console.WriteLine($"the command is: {command} ");
                 if (!communicate)
                 {
-                    communicate = true;
                     CreateANewConnection();
-                }
-                if (this.waitForOtherPlayer)
-                {
-                    Console.WriteLine($"Ignored the command: {command} ");
-                    command = " ";
-                    WaitForOtherPlayerToJoin();
-                    int s = 2;
+                    communicate = true;
+
                 }
 
-                if (command != null && command != " ")
-                {
-                    Console.WriteLine($"the command is: {command} ");
-                    StreamWriter.WriteLine(command);
-                    StreamWriter.Flush();
-                }
+                StreamWriter.WriteLine(command);
+                StreamWriter.Flush();
             }
-
-        }
-
-        public void WaitForOtherPlayerToJoin()
-        {
-            waitForOtherPlayer = true;
-            string joined = "";
-            while (!joined.StartsWith("The Game Has Started"))
-            {
-                joined = streamReader.ReadLine();
-                if (joined.Equals("The Game Has Started")) 
-                {
-                    Console.WriteLine("The Game Has Started");
-                    this.waitForOtherPlayer = false;
-                    break;
-                }
-                if (joined.Equals("a player joined the game"));
-                {
-                    Console.WriteLine("a player joined the game");
-                }
-            }
-            
-            this.waitForOtherPlayer = false;
         }
 
 
+        /// <summary>
+        /// Closes the connection.
+        /// </summary>
         public void CloseConnection()
         {
             TheClient.Close();
         }
 
+        /// <summary>
+        /// Creates a new connection.
+        /// </summary>
         public void CreateANewConnection()
         {
             TheClient = new TcpClient();
@@ -192,6 +198,7 @@ namespace TheClient
         }
 
 
-
     }
+    
 }
+
