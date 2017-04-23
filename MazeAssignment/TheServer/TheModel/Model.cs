@@ -242,6 +242,7 @@ namespace TheServer.TheModel
                 MazeGame game = JoinableMazes[mazeName];
                 game.AddPlayer(player);
                 player.MazeName = game.MazeName;
+                game.NotifyOtherPlayers("a player joined the game", player);
                 if (game.GameCapacity == game.Players.Count)
                 {
                     ActiveMultiPlayerMazes[mazeName] = game;
@@ -262,6 +263,7 @@ namespace TheServer.TheModel
         {
             foreach(Player p in game.Players)
             {
+
                 PlayersAndGames[p] = game;//adds the players as a key to the dictionary and the mazegame as the value.
                 p.NeedToWait = false;
                 p.Message = "The Game Has Started";
@@ -286,19 +288,25 @@ namespace TheServer.TheModel
             }
             if(PlayersAndGames[player] == null)
             {
-                return ($"Error: you are not a part of a game at this point ");
+                return ("Error: you are not a part of a game at this point ");
             }
             MazeGame game = ActiveMultiPlayerMazes[mazeName];
             game.NotifyOtherPlayers($"the other player moved  {direction}", player);
             return "";
         }
 
-        public void Close(string mazeName)
+        public string Close(string mazeName)
         {
+            if (!ActiveMultiPlayerMazes.ContainsKey(mazeName))
+            {
+                return $"Error: there is no such maze to close named {mazeName}";
+            }
             MazeGame game = ActiveMultiPlayerMazes[mazeName];//getting the game.
+            game.NotifyAllPlayers("The Game Was Closed");
             RemovePlayersFromPlayersAndGames(mazeName); //getting the players of the dictionary of the players and games
             game.CloseAllClients();
             activeMultiPlayerMazes.Remove(mazeName);
+            return "";
 
         }
 

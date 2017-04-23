@@ -19,7 +19,11 @@ namespace TheServer.TheController.Commands.MultiPlayerCommands
             {
                 return "Error: Incorrect number of arguments";
             }
-            IModel.Close(args[0]);
+           string result = IModel.Close(args[0]);
+            if (result.StartsWith("Error"))
+            {
+                return result;
+            }
             JObject jobject = new JObject();
             return jobject.ToString();
         }

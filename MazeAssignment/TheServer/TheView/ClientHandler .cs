@@ -87,8 +87,6 @@ namespace TheServer.TheView
             {
                 System.Threading.Thread.Sleep(1000);
             }
-            streamWriter.WriteLine("other players joined ");//writes the client that other players has joined. 
-            streamWriter.Flush();
 
         }
 

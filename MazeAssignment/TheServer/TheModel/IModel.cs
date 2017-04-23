@@ -20,7 +20,7 @@ namespace TheServer.TheModel
         List<string> GetNamesOfJoinableMazes();
         Maze JoinMaze(string maze, Player player);
         string Play(string [] args, Player player);
-        void Close(string mazeName);
+        string Close(string mazeName);
                
 
         SearchAlgorithmFactory<Position> AlgorithmFactory

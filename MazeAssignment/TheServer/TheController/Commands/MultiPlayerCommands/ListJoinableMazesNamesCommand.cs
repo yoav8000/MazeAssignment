@@ -15,6 +15,10 @@ namespace TheServer.TheController.Commands.MultiPlayerCommands
         public ListJoinableMazesNamesCommand(IModel imodel) : base(imodel) { }
         public override string Execute(string[] args, Player player)
         {
+            if(args.Length != 0)
+            {
+                return "Error the amount of arguments is not right";
+            }
             return JsonConvert.SerializeObject(IModel.GetNamesOfJoinableMazes(),Formatting.Indented);
         }
 

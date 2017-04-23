@@ -92,8 +92,8 @@ namespace TheClient
                     if (result.Equals("wait"))
                     {
                         Console.WriteLine("wait");
-                        waitForOtherPlayer = true;
-                        WaitForOtherPlayerToJoin();
+                        this.waitForOtherPlayer = true;
+                        
                         result = "";
                     }
                     Console.WriteLine(result);
@@ -115,6 +115,13 @@ namespace TheClient
             }
         }
 
+
+
+
+
+
+
+
         public void WriteMessage()
         {
             if (!waitForOtherPlayer)
@@ -127,9 +134,12 @@ namespace TheClient
                     communicate = true;
                     CreateANewConnection();
                 }
-                if (waitForOtherPlayer)
+                if (this.waitForOtherPlayer)
                 {
+                    Console.WriteLine($"Ignored the command: {command} ");
+                    command = " ";
                     WaitForOtherPlayerToJoin();
+                    int s = 2;
                 }
 
                 if (command != null && command != " ")
@@ -146,14 +156,22 @@ namespace TheClient
         {
             waitForOtherPlayer = true;
             string joined = "";
-            joined = streamReader.ReadLine();
-            while (!joined.StartsWith("other players joined "))
+            while (!joined.StartsWith("The Game Has Started"))
             {
                 joined = streamReader.ReadLine();
-               
+                if (joined.Equals("The Game Has Started")) 
+                {
+                    Console.WriteLine("The Game Has Started");
+                    this.waitForOtherPlayer = false;
+                    break;
+                }
+                if (joined.Equals("a player joined the game"));
+                {
+                    Console.WriteLine("a player joined the game");
+                }
             }
-            Console.WriteLine("a player joined the game");
-            waitForOtherPlayer = false;
+            
+            this.waitForOtherPlayer = false;
         }
 
 
