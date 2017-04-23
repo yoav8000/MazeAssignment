@@ -9,7 +9,8 @@ using TheServer.TheController.Commands.MultiPlayerCommands;
 using TheServer.TheMazeGame;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
-
+using TheServer.TheView;
+using TheServer.TheController;
 namespace TheServer
 {
     class Program
@@ -17,14 +18,21 @@ namespace TheServer
          
         static void Main(string[] args)
         {
+            IModel model = new Model();
+            IController controller = new Controller(model);
+            model.IController = controller;
+//            IModel model = new Model(controller);
+            IClientHandler clientHandler = new ClientHandler(controller);
+            controller.IModel = model;
+            controller.IClientHandler = clientHandler;
 
-
-
+            Server server = new Server(8000, clientHandler);
+            server.Start();
             
-
+            /*
             Player p1 = new Player();
             Player p2 = new Player();
-            IModel model = new Model();
+          //  IModel model = new Model();
             string[] args1 = new string[3];
             args1[0] = "BLA";
             args1[1] = "10";
@@ -55,7 +63,7 @@ namespace TheServer
 
 
             int x = 2;
-            
+            */
         }
     }
 }

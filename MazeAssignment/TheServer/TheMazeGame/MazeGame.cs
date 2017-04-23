@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MazeLib;
+using System.IO;
+using System.Net.Sockets;
 
 namespace TheServer.TheMazeGame
 {
@@ -13,7 +15,7 @@ namespace TheServer.TheMazeGame
         private List<Player> players;
         private string mazeName;
         private Maze maze;
-        bool reachedGoalCapacity;
+  
        
 
         public MazeGame(string mazeName,Maze maze, int gameCapacity)
@@ -58,15 +60,18 @@ namespace TheServer.TheMazeGame
             }
         }
 
-
+        public List<Player> Players
+        {
+            get
+            {
+                return this.players;
+            }
+        }
 
         public void AddPlayer(Player player)
         {
             players.Add(player);
-            if(players.Count == gameCapacity)
-            {
-                reachedGoalCapacity = true;
-            }
+            
         }
 
         public void RemovePlayer(Player player)//need to override the equal method.
@@ -94,14 +99,36 @@ namespace TheServer.TheMazeGame
         }
 
 
-        public void NotifyPlayers(string message)
+        public void NotifyAllPlayers(string message)
         {
          foreach(Player p in players)
             {
-                p.GetNotified(message);
+
+                p.NotifyClient(message);
             }  
         }
 
+        public void CloseAllClients()
+        {
+            foreach (Player p in players)
+            {
+                p.Communicate = false;
+                p.Client.Close();
+            }
+        }
 
+
+
+        public void NotifyOtherPlayers(string message, Player player)
+        {
+            foreach (Player p in players)
+            {
+                if (!p.Equals(player))
+                {
+                    p.NotifyClient(message);
+                }
+                
+            }
+        }
     }
 }

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace testComm
+namespace TheServer
 {
     class Program
     {
@@ -13,7 +13,10 @@ namespace testComm
             Server server = new Server(8000, new ClientHandler());
             server.Start();
             Console.ReadLine();
-            Task.WaitAny();
+            while (true)
+            {
+
+            }
         }
     }
 }

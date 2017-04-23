@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
@@ -13,29 +14,35 @@ namespace TheServer.TheMazeGame
         private bool needToWait;
         private string mazeName;
         private TcpClient client;
-
+        private string message;
+        private bool needToBeNotified;
+       
 
         public Player(string mazeName, TcpClient client = null)
         {
-            this.needToWait = true;
+            this.needToWait = false;
             this.communicate = true;
             this.mazeName = mazeName;
             this.client = client;
+  
         }
 
         public Player(TcpClient client = null)
         {
-            this.needToWait = true;
-            this.needToWait = true;
+            this.needToWait = false;
+            this.communicate = true;
             this.mazeName = null;
             this.client = client;
+          
         }
         public Player()
         {
-            this.needToWait = true;
-            this.needToWait = true;
+            this.needToWait = false;
+            this.communicate = true;
             this.mazeName = null;
             this.client = null;
+           
+
         }
 
 
@@ -95,32 +102,42 @@ namespace TheServer.TheMazeGame
             NeedToWait = true;
 
 
-            while (NeedToWait)
+        }
+
+        public string Message
+        {
+            get
             {
-                switch (waitFor.ToLower())
-                {
-                    case "other player to play":
-                        {
-                            System.Threading.Thread.Sleep(50);
-                            break;
-                        }
-                    case "maze to reach capacity":
-                        {
-                            System.Threading.Thread.Sleep(1000);
-                            break;
-                        }
-                    default:
-                        {
-                            break;
-                        }
-                }  
+                return this.message;
+            }
+            set
+            {
+                this.message = value;
             }
         }
 
-        public void GetNotified(string message)//check if neccessery
+        public void NotifyClient(string message)
         {
-            return;
+            NetworkStream stream = Client.GetStream();
+            StreamWriter streamWriter = new StreamWriter(stream);
+            streamWriter.WriteLine(message);
+            streamWriter.Flush();
         }
+
+
+
+        public bool NeedToBeNotified
+        {
+            get
+            {
+                return this.needToBeNotified;
+            }
+            set
+            {
+                this.needToBeNotified = value;
+            }
+        }
+
 
         public bool Equals(Player other)
         {

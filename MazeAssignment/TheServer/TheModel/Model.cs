@@ -23,6 +23,8 @@ namespace TheServer.TheModel
         private Dictionary<string, MazeGame> joinableMazes;
         private IController icontroller;
         private Dictionary<string, MazeGame> activeMultiPlayerMazes;
+        private Dictionary<Player, MazeGame> playersAndGames;
+
 
         public Model(IController icontroller)
         {
@@ -34,6 +36,7 @@ namespace TheServer.TheModel
             this.multiPlayerMazes = new Dictionary<string, Maze>();
             this.joinableMazes = new Dictionary<string, MazeGame>();
             this.activeMultiPlayerMazes = new Dictionary<string, MazeGame>();
+            this.playersAndGames = new Dictionary<Player, MazeGame>();
         }
 
         public Model()///////////////////////for testing deleteeeeee later on!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -45,7 +48,22 @@ namespace TheServer.TheModel
             this.multiPlayerMazes = new Dictionary<string, Maze>();
             this.joinableMazes = new Dictionary<string, MazeGame>();
             this.activeMultiPlayerMazes = new Dictionary<string, MazeGame>();
+            this.playersAndGames = new Dictionary<Player, MazeGame>();
         }
+
+        public IController IController
+        {
+            get
+            {
+                return this.icontroller;
+            }
+            set
+            {
+                this.icontroller = value;
+            }
+        }
+
+
 
         public Dictionary<string, Maze> MultiPlayerMazes
         {
@@ -71,7 +89,7 @@ namespace TheServer.TheModel
             }
         }
 
-
+        
 
         public Dictionary<string, Maze> SinglePlayerMazes
         {
@@ -89,6 +107,13 @@ namespace TheServer.TheModel
             }
         }
 
+        public Dictionary<Player, MazeGame> PlayersAndGames
+        {
+            get
+            {
+                return this.playersAndGames;
+            }
+        }
 
         public DFSMazeGenerator MazeGenerator
         {
@@ -108,13 +133,7 @@ namespace TheServer.TheModel
         }
 
 
-        public IController IController
-        {
-            get
-            {
-                return this.icontroller;
-            }
-        }
+        
 
         private Maze GenerateMaze(string name, int rows, int cols)
         {
@@ -147,7 +166,9 @@ namespace TheServer.TheModel
             MultiPlayerMazes[name] = maze;
             MazeGame game = new MazeGame(name, maze, playersCapacity);
             JoinableMazes[name] = game;
-            game.AddPlayer(player);
+            player.NeedToWait = true;
+            game.AddPlayer(player);//the player needs to wait for another player to join the game.
+            player.MazeName = game.MazeName;
             return maze;
         }
 
@@ -220,8 +241,13 @@ namespace TheServer.TheModel
             {
                 MazeGame game = JoinableMazes[mazeName];
                 game.AddPlayer(player);
-                ActiveMultiPlayerMazes[mazeName] = game;
-                joinableMazes.Remove(mazeName);
+                player.MazeName = game.MazeName;
+                if (game.GameCapacity == game.Players.Count)
+                {
+                    ActiveMultiPlayerMazes[mazeName] = game;
+                    joinableMazes.Remove(mazeName);
+                    ReleasePlayerFromWaitingMode(game);
+                }
                 return game.Maze;
 
             }
@@ -232,14 +258,58 @@ namespace TheServer.TheModel
 
         }
 
+        private void ReleasePlayerFromWaitingMode(MazeGame game)
+        {
+            foreach(Player p in game.Players)
+            {
+                PlayersAndGames[p] = game;//adds the players as a key to the dictionary and the mazegame as the value.
+                p.NeedToWait = false;
+                p.Message = "The Game Has Started";
+                p.NeedToBeNotified = true;   
+            }
+
+        }
+
+
+       public string Play(string []args, Player player)
+        {
+            string direction = args[0];
+            if(player.MazeName == null)
+            {
+                return "Error: you are not a part of an active game";
+
+            }
+            string mazeName = player.MazeName;
+            if (!ActiveMultiPlayerMazes.ContainsKey(mazeName))
+            {
+                return $"Error: there is no such maze with the name {mazeName}";
+            }
+            if(PlayersAndGames[player] == null)
+            {
+                return ($"Error: you are not a part of a game at this point ");
+            }
+            MazeGame game = ActiveMultiPlayerMazes[mazeName];
+            game.NotifyOtherPlayers($"the other player moved  {direction}", player);
+            return "";
+        }
 
         public void Close(string mazeName)
         {
             MazeGame game = ActiveMultiPlayerMazes[mazeName];//getting the game.
-            //update that the game was closed.
-            game.NotifyPlayers("the game was closed by one of the players");
-            //!!!!!!
+            RemovePlayersFromPlayersAndGames(mazeName); //getting the players of the dictionary of the players and games
+            game.CloseAllClients();
             activeMultiPlayerMazes.Remove(mazeName);
+
         }
+
+        private void RemovePlayersFromPlayersAndGames(string mazeName)
+        {
+            MazeGame game = ActiveMultiPlayerMazes[mazeName];
+            foreach(Player p in game.Players)
+            {
+                PlayersAndGames.Remove(p);
+            }
+        }
+
     }
 }

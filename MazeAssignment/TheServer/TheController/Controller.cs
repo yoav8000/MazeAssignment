@@ -20,7 +20,7 @@ namespace TheServer.TheController
         private IModel imodel;
         private IClientHandler clientHandler;
 
-        public Controller()
+        public Controller()/// sort the constructors.
         {
 
             commandsDictionary = new Dictionary<string, ICommand>();
@@ -29,6 +29,21 @@ namespace TheServer.TheController
             commandsDictionary.Add("start", new StartCommand(imodel));
             commandsDictionary.Add("join", new JoinMazeCommand(imodel));
             commandsDictionary.Add("list", new ListJoinableMazesNamesCommand(imodel));
+            CommandDictionary.Add("play", new PlayCommand(imodel));
+            CommandDictionary.Add("close", new CloseCommand(imodel));
+        }
+
+        public Controller(IModel model)
+        {
+            this.IModel = model;
+            commandsDictionary = new Dictionary<string, ICommand>();
+            commandsDictionary.Add("generate", new GenerateSinglePlayerMazeCommand(imodel));
+            commandsDictionary.Add("solve", new SolveMazeCommand(imodel));
+            commandsDictionary.Add("start", new StartCommand(imodel));
+            commandsDictionary.Add("join", new JoinMazeCommand(imodel));
+            commandsDictionary.Add("list", new ListJoinableMazesNamesCommand(imodel));
+            CommandDictionary.Add("play", new PlayCommand(imodel));
+            CommandDictionary.Add("close", new CloseCommand(imodel));
         }
 
         public string ExecuteCommand(string commandLine, Player player)
@@ -36,16 +51,15 @@ namespace TheServer.TheController
             ICommand command = GetCommand(commandLine);
             if (command == null)
             {
-                return "Command not found";
+                return "Error: Command not found ";
             }
             else
             {
-
+                string[] arr = commandLine.Split(' ');
+                string commandKey = arr[0];
+                string[] args = arr.Skip(1).ToArray();
+                return command.Execute(args, player);
             }
-            string[] arr = commandLine.Split(' ');
-            string commandKey = arr[0];
-            string[] args = arr.Skip(1).ToArray();
-            return command.Execute(args, player);
         }
 
 

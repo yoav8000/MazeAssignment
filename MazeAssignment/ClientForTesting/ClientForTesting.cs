@@ -2,34 +2,41 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TheClient
+
+namespace ClientForTesting
 {
-    class Client
+    class ClientForTesting
     {
         private bool communicate;
-        private NetworkStream stream;
         private StreamReader streamReader;
         private StreamWriter streamWriter;
         private TcpClient theClient;
         private bool waitForOtherPlayer;
-        private IPEndPoint ep;
-        private int portNumber;
-
-
-        public Client(IPEndPoint ep, int portNumber)
+        private bool startCommandWasSent;
+        public ClientForTesting()
         {
-            this.ep = ep;
-            this.portNumber = portNumber;
-            CreateANewConnection();
+            this.theClient = new TcpClient();
+            StreamReader = new StreamReader(TheClient.GetStream());
+            StreamWriter = new StreamWriter(TheClient.GetStream());
             communicate = true;
             streamWriter.AutoFlush = true;
             waitForOtherPlayer = false;
+            startCommandWasSent = false;
+        }
 
+        public ClientForTesting(TcpClient client)
+        {
+            this.theClient = client;
+            StreamReader = new StreamReader(TheClient.GetStream());
+            StreamWriter = new StreamWriter(TheClient.GetStream());
+            communicate = true;
+            streamWriter.AutoFlush = true;
+            waitForOtherPlayer = false;
+            startCommandWasSent = false;
         }
 
 
@@ -38,11 +45,6 @@ namespace TheClient
             get
             {
                 return this.theClient;
-            }
-
-            set
-            {
-                this.theClient = value;
             }
         }
 
@@ -83,33 +85,27 @@ namespace TheClient
         }
         public void ReadMessage()
         {
-            try
-            {
-                string result = StreamReader.ReadLine();
+            string result = StreamReader.ReadLine();
 
-                if (result != null)
+            if (result != null)
+            {
+                if (result.Equals("wait"))
                 {
-                    if (result.Equals("wait"))
-                    {
-                        Console.WriteLine("wait");
-                        waitForOtherPlayer = true;
-                        WaitForOtherPlayerToJoin();
-                        result = "";
-                    }
-                    Console.WriteLine(result);
-                    string[] arr;
-                    arr = result.Split(' ');
-                    if (arr[0].StartsWith("Error"))
-                    {
-                        Console.WriteLine("there was an error please type another command ");
-                    }
+                    Console.WriteLine("\n");
+                    Console.WriteLine("wait");
+                    waitForOtherPlayer = true;
+                    WaitForOtherPlayerToJoin();
+                    result = "";
                 }
-                else
+                Console.WriteLine(result);
+                string[] arr;
+                arr = result.Split(' ');
+                if (arr[0].StartsWith("Error"))
                 {
-                    communicate = false;
+                    Console.WriteLine("there was an error please type another command ");
                 }
             }
-            catch
+            else
             {
                 communicate = false;
             }
@@ -120,13 +116,7 @@ namespace TheClient
             if (!waitForOtherPlayer)
             {
                 Console.WriteLine("Please enter a command: ");
-               
                 string command = Console.ReadLine();
-                if (!communicate)
-                {
-                    communicate = true;
-                    CreateANewConnection();
-                }
                 if (waitForOtherPlayer)
                 {
                     WaitForOtherPlayerToJoin();
@@ -150,7 +140,7 @@ namespace TheClient
             while (!joined.StartsWith("other players joined "))
             {
                 joined = streamReader.ReadLine();
-               
+
             }
             Console.WriteLine("a player joined the game");
             waitForOtherPlayer = false;
@@ -161,19 +151,6 @@ namespace TheClient
         {
             TheClient.Close();
         }
-
-        public void CreateANewConnection()
-        {
-            TheClient = new TcpClient();
-            TheClient.Connect(this.ep);//connect to the server
-            this.stream = TheClient.GetStream();
-            StreamReader = new StreamReader(TheClient.GetStream());
-            StreamWriter = new StreamWriter(TheClient.GetStream());
-            Console.WriteLine("you are connected ");
-            communicate = true;
-        }
-
-
 
     }
 }

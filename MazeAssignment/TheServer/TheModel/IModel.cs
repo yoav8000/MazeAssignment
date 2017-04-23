@@ -19,8 +19,9 @@ namespace TheServer.TheModel
         ISearcher<Position> GetAlgorithmAccordingToIndicator(string algorithmIndicator);
         List<string> GetNamesOfJoinableMazes();
         Maze JoinMaze(string maze, Player player);
+        string Play(string [] args, Player player);
         void Close(string mazeName);
-
+               
 
         SearchAlgorithmFactory<Position> AlgorithmFactory
         {
@@ -58,9 +59,16 @@ namespace TheServer.TheModel
             get;
         }
 
+        Dictionary<Player,MazeGame> PlayersAndGames
+        {
+            get;
+        }
+
+
         IController IController
         {
             get;
+            set;
         }
     }
 }

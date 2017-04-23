@@ -14,8 +14,6 @@ namespace TheServer.TheView
     class ClientHandler:IClientHandler
     {
         private IController icontroller;
-        private StreamReader streamReader;
-        private StreamWriter streamWriter;
 
 
         public ClientHandler(IController icontroller)
@@ -23,60 +21,85 @@ namespace TheServer.TheView
             this.icontroller = icontroller;
         }
 
-        public StreamReader StreamReader
-        {
-            get
-            {
-                return this.streamReader;
-            }
-            set
-            {
-                this.streamReader = value;
-            }
-        }
-
-        public StreamWriter StreamWriter
-        {
-            get
-            {
-                return this.streamWriter;
-            }
-            set
-            {
-                this.streamWriter = value;
-            }
-        }
-
+     
         public void HandleClient(Player player)
         {
-            NetworkStream stream = player.Client.GetStream();
-            StreamReader = new StreamReader(stream);
-            StreamWriter = new StreamWriter(stream);
-            string currentCommand;
+         
             new Task(() =>
             {
+                NetworkStream stream = player.Client.GetStream();
+                StreamReader streamReader = new StreamReader(stream);
+                StreamWriter streamWriter = new StreamWriter(stream);
                 while (player.Communicate)
                 {
-                    string commandLine = StreamReader.ReadLine();//recieve command from the client.
-                    currentCommand = commandLine;
-                    Console.WriteLine("Got command: {0}", commandLine);
-                    //got the command
 
-
-                    string result = icontroller.ExecuteCommand(commandLine, player);//executed it.
-
-
-                    StreamWriter.Write(result);//writes the result back to the client 
-                    if (IController.GetCommand(currentCommand) is SinglePlayerCommand)//check if the command has to be open.
+                    try
                     {
-                        StreamWriter.Write("close connection");
-                        player.Communicate = false;
+                        string commandLine = streamReader.ReadLine();//recieve command from the client.
+
+
+                        Console.WriteLine($"Got command: {commandLine}");
+                        //got the command
+
+
+                        string result = icontroller.ExecuteCommand(commandLine, player);//executed it.
+
+                        Console.WriteLine($"the result is: {result}");
+
+                        streamWriter.WriteLine(result);//writes the result back to the client 
+                        streamWriter.Flush();
+                        if (player.NeedToWait)
+                        {
+                            WaitForOtherPlayerToJoin(player, streamWriter);
+                        }
+                        if (player.NeedToBeNotified)
+                        {
+                            SendOponentPlayedMessage(player, streamWriter);
+                        }
+
+
+
+                        if (IController.GetCommand(commandLine) is SinglePlayerCommand)//check if the command has to be open.
+                        {
+                            System.Threading.Thread.Sleep(1000);
+                            player.Communicate = false;
+                            player.Client.Close();
+                        }
                     }
-                    currentCommand = null;
+                    catch
+                    {
+
+                        System.Threading.Thread.Sleep(1000);
+                        player.Communicate = false;
+                        player.Client.Close();
+                        break;
+                    }
                 }
             }).Start();
         }
 
+        private void WaitForOtherPlayerToJoin(Player player, StreamWriter streamWriter)
+        {
+            streamWriter.WriteLine("wait");//writes the result back to the client 
+            streamWriter.Flush();
+
+            while (player.NeedToWait)
+            {
+                System.Threading.Thread.Sleep(1000);
+            }
+            streamWriter.WriteLine("other players joined ");//writes the client that other players has joined. 
+            streamWriter.Flush();
+
+        }
+
+        private void SendOponentPlayedMessage(Player player, StreamWriter streamWriter)
+        {
+            string message = player.Message;
+            streamWriter.WriteLine(message);
+            streamWriter.Flush();
+            player.Message = "";
+            player.NeedToBeNotified = false;
+        }
 
 
 
@@ -84,7 +107,7 @@ namespace TheServer.TheView
         {
             get
             {
-                return this.IController;
+                return this.icontroller;
             }
         }
     }
