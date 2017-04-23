@@ -5,6 +5,9 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using System.Configuration;
+using System.IO;
+
 
 namespace TheClient
 {
@@ -14,9 +17,9 @@ namespace TheClient
         {
             System.Threading.Thread.Sleep(1000);// make sure that the server will react to the connection request.
 
-
-            IPEndPoint ep = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 8000);
-            int port = 8000;
+            int port = int.Parse(ConfigurationManager.AppSettings["portNumber"]);
+            IPEndPoint ep = new IPEndPoint(IPAddress.Parse("127.0.0.1"), port);
+           
             Client client = new Client(ep, port);
             
             Task task = new Task(() =>//create a reading thread from the server.

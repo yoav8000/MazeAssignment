@@ -11,6 +11,7 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using TheServer.TheView;
 using TheServer.TheController;
+using System.Configuration;
 namespace TheServer
 {
     class Program
@@ -24,8 +25,8 @@ namespace TheServer
             IClientHandler clientHandler = new ClientHandler(controller);
             controller.IModel = model;
             controller.IClientHandler = clientHandler;
-
-            Server server = new Server(8000, clientHandler);
+            int portNumber = int.Parse(ConfigurationManager.AppSettings["portNumber"]);
+            Server server = new Server(portNumber, clientHandler);
             server.Start();
 
         }
