@@ -28,13 +28,11 @@ namespace TheMazeGui.View.SinglePlayerView
         public SinglePlayerGameWindow(string name, int rows, int cols)
         {
             vm = new SinglePlayerViewModel(new SinglePlayerModel(new SettingsModel()));
-           
 
-            //DataContext = vm;
             vm.StartNewGame(name, rows, cols);
             this.DataContext = this.vm;//check if it should be before initialization.
             InitializeComponent();
-           
+
 
         }
 
@@ -55,7 +53,45 @@ namespace TheMazeGui.View.SinglePlayerView
 
         private void MazeBoard_Loaded(object sender, RoutedEventArgs e)
         {
-           
+            Window window = Window.GetWindow(this);
+            window.KeyDown += HandleKeyPress;
+        }
+        private void HandleKeyPress(object sender, KeyEventArgs e)
+        {
+            string direction = "";
+            switch (e.Key)
+            {
+                case Key.Down:
+                    {
+                        direction = "Down";
+                        break;
+                    }
+                case Key.Up:
+                    {
+                        direction = "Up";
+                        break;
+                    }
+                case Key.Right:
+                    {
+                        direction = "Right";
+                        break;
+                    }
+                case Key.Left:
+                    {
+                        direction = "Left";
+                        break;
+                    }
+                default:
+                    {
+                        break;
+                    }
+            }
+            if (direction != "")
+            {
+                vm.MovePlayer(direction);
+            }
+
         }
     }
 }
+

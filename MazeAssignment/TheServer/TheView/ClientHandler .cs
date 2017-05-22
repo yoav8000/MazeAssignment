@@ -59,7 +59,8 @@ namespace TheServer.TheView
                         if (result != null)
                         {
                             Console.WriteLine($"the result is: {result}");
-
+                            MazeLib.Maze m = MazeLib.Maze.FromJSON(result);
+                            Console.WriteLine(m);
                             streamWriter.WriteLine(result.Replace(Environment.NewLine, ""));//writes the result back to the client 
                             streamWriter.Flush();
                         }

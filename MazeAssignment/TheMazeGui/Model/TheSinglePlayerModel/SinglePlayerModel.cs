@@ -21,9 +21,6 @@ namespace TheMazeGui.Model.TheSinglePlayerModel
         private Position initialPosition;
         private Position goalPosition;
         private IClient singlePlayerClient;
-        private string stringMaze;
-        private string solution;
-        private int searchAlgo;
         private string ipAddress;
         private int portNumber;
         private volatile bool stop;
@@ -126,12 +123,12 @@ namespace TheMazeGui.Model.TheSinglePlayerModel
         {
             get
             {
-                return ResultMaze.InitialPos;
+                return this.playerPosition;
             }
 
             set
             {
-                playerPosition = value;
+                this.playerPosition = value;
                 NotifyPropertyChanged("PlayerPosition");
             }
         }
@@ -226,55 +223,92 @@ namespace TheMazeGui.Model.TheSinglePlayerModel
                 Maze = temp.Replace(Environment.NewLine, "");
                 GoalPosition = ResultMaze.GoalPos;//invokes the setter and activates the event.
                 InitialPosition = ResultMaze.InitialPos;//invokes the setter and activates the event.
+                PlayerPosition = InitialPosition;
                 
             }
         }
 
-        /*
-        public void PlayUp()
+        public void MovePlayer(string keyDirection)
         {
-            Position p = PlayerPosition;
-            int row = p.Row;
-            int col = p.Col;
-            if ((row > 0) && (row < Maze.Rows) && (Maze[row - 1, col] == CellType.Free))
+            
+            switch (keyDirection)
             {
-                PlayerPosition = new Position(p.Row - 1, p.Col); //check the goal position
+                case "Down":
+                    {
+                        if (PlayerCanMove(Direction.Down)){
+                            PlayerPosition = new Position(PlayerPosition.Row+1, PlayerPosition.Col );
+                        }
+                        break;
+                    }
+                case "Up":
+                    {
+                        if (PlayerCanMove(Direction.Up))
+                        {
+                            PlayerPosition = new Position(PlayerPosition.Row -1 , PlayerPosition.Col);
+                        }
+                        break;
+                    }
+                case "Right":
+                    {
+                        if (PlayerCanMove(Direction.Right))
+                        {
+                            PlayerPosition = new Position(PlayerPosition.Row , PlayerPosition.Col+1);
+                        }
+                        break;
+                    }
+                case "Left":
+                    {
+                        if (PlayerCanMove(Direction.Left))
+                        {
+                            PlayerPosition = new Position(PlayerPosition.Row, PlayerPosition.Col -1);
+                        }
+                        break;
+                    }
+                default:
+                    {
+                        break;
+                    }
             }
+
         }
 
-        public void PlayDown()
+        private bool PlayerCanMove(Direction direction)
         {
-            Position p = PlayerPosition;
-            int row = p.Row;
-            int col = p.Col;
-            if ((row > 0) && (row < Maze.Rows) && (Maze[row + 1, col] == CellType.Free))
+            int currentColPosition = PlayerPosition.Col;
+            int currentRowPosition = PlayerPosition.Row;
+
+            switch (direction)
             {
-                PlayerPosition = new Position(p.Row + 1, p.Col); //check the goal position
+                case Direction.Left:
+                    {
+                        return ((currentColPosition - 1 >= 0) && ('0' == Maze[(currentRowPosition * int.Parse(Cols)) + currentColPosition - 1]
+                           || '*' == Maze[(currentRowPosition * int.Parse(Cols)) + currentColPosition - 1])
+                     );
+                    }
+
+                case Direction.Up:
+                    {
+                        return ((currentRowPosition - 1 >= 0) && ('0' == Maze[((currentRowPosition - 1) * int.Parse(Cols)) + currentColPosition]
+                            || '*' == Maze[((currentRowPosition - 1) * int.Parse(Cols)) + currentColPosition])
+                  );
+                    }
+                case Direction.Down:
+                    {
+                        return ((currentRowPosition + 1 < int.Parse(Rows)) && ('0' == Maze[((currentRowPosition + 1) * int.Parse(Cols)) + currentColPosition]
+                             || '*' == Maze[((currentRowPosition + 1) * int.Parse(Cols)) + currentColPosition])
+              );
+                    }
+                case Direction.Right:
+                    {
+                        return ((currentColPosition + 1 < int.Parse(Cols)) &&( '0' == Maze[(currentRowPosition * int.Parse(Cols)) + currentColPosition + 1]
+                              || '*' == Maze[(currentRowPosition * int.Parse(Cols)) + currentColPosition + 1])
+                        );
+                    }     
             }
+            return false;
         }
 
-        public void PlayRight()
-        {
-            Position p = PlayerPosition;
-            int row = p.Row;
-            int col = p.Col;
-            if ((col >= 0) && (col < Maze.Cols - 1) && (Maze[row, col + 1] == CellType.Free))
-            {
-                PlayerPosition = new Position(row, col + 1); //check the goal position
-            }
-        }
 
-        public void PlayLeft()
-        {
-            Position p = PlayerPosition;
-            int row = p.Row;
-            int col = p.Col;
-            if ((col > 0) && (col < Maze.Cols) && (Maze[row, col - 1] == CellType.Free))
-            {
-                PlayerPosition = new Position(row, col - 1); //check the goal position
-            }
-        }
-        */
 
         public void SendMessageToServer(string message)
         {

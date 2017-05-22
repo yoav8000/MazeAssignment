@@ -13,7 +13,7 @@ namespace TheMazeGui.ViewModel
     public class SinglePlayerViewModel : IClientViewModel
     {
         private SinglePlayerModel singlePModel;
-      
+
 
         public SinglePlayerViewModel(SinglePlayerModel spm)
         {
@@ -89,9 +89,7 @@ namespace TheMazeGui.ViewModel
             }
 
         }
- 
-       
-        
+
         public Position VM_InitialPosition
         {
             get
@@ -101,6 +99,7 @@ namespace TheMazeGui.ViewModel
             }
 
         }
+
         public Position VM_GoalPosition
         {
             get
@@ -131,11 +130,19 @@ namespace TheMazeGui.ViewModel
             }
         }
 
-        public void StartNewGame(string name,int rows, int cols)
+        public void StartNewGame(string name, int rows, int cols)
         {
-            singlePModel.GenerateSinglePlayerMaze(name,rows,cols);
+            singlePModel.GenerateSinglePlayerMaze(name, rows, cols);
         }
 
+        public void MovePlayer(string direction)
+        {
+            singlePModel.MovePlayer(direction);
+        }
 
     }
+
+
 }
+
+
