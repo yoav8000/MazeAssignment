@@ -7,7 +7,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Configuration;
 using System.IO;
-
+using TheClientDll;
+using TheMazeGui.Model.TheSinglePlayerModel;
 
 namespace TheClient
 {
@@ -19,7 +20,20 @@ namespace TheClient
 
             int port = int.Parse(ConfigurationManager.AppSettings["portNumber"]);
             IPEndPoint ep = new IPEndPoint(IPAddress.Parse("127.0.0.1"), port);
-           
+
+
+            SinglePlayerModel p = new SinglePlayerModel(new SinglePlayerClient());
+
+            ///debugging
+            //IClient SPC = new SinglePlayerClient();
+            p.Connect("127.0.0.1", port);
+            p.SendMessageToServer("generate maze 10 10");
+            string result = p.RecieveMessageFromServer();
+            p.SendMessageToServer("solve maze 1");
+            string result1 = p.RecieveMessageFromServer();
+            p.Disconnect();
+
+
             Client client = new Client(ep, port);
             
             Task task = new Task(() =>//create a reading thread from the server.
@@ -47,17 +61,11 @@ namespace TheClient
             });
             task1.Start();
 
-
-
             task.Wait();
             task1.Wait();
-            
+    
             client.CloseConnection();
-
-            
-
-
-
+           
         }
     }
 }

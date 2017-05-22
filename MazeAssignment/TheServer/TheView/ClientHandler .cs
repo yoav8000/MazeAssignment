@@ -55,19 +55,16 @@ namespace TheServer.TheView
 
 
                         string result = icontroller.ExecuteCommand(commandLine, player);//executed it.
-                        if (result != "wait")
+               
+                        if (result != null)
                         {
                             Console.WriteLine($"the result is: {result}");
-                           
-                            streamWriter.WriteLine(result);//writes the result back to the client 
+
+                            streamWriter.WriteLine(result.Replace(Environment.NewLine, ""));//writes the result back to the client 
                             streamWriter.Flush();
+                        }
 
-                            if (player.NeedToBeNotified)
-                            {
-                                SendOponentPlayedMessage(player, streamWriter);
-                            }
-
-
+                  
 
                             if (IController.GetCommand(commandLine) is SinglePlayerCommand)//check if the command has to be open.
                             {
@@ -75,12 +72,8 @@ namespace TheServer.TheView
                                 player.Communicate = false;
                                 player.Client.Close();
                             }
-                        }
-                        else
-                        {
-                            streamWriter.WriteLine("wait");//writes the result back to the client 
-                            streamWriter.Flush();
-                        }
+
+                
                     }
                     catch
                     {
@@ -93,39 +86,6 @@ namespace TheServer.TheView
                 }
             }).Start();
         }
-
-        /// <summary>
-        /// Waits for other player to join.
-        /// </summary>
-        /// <param name="player">The player.</param>
-        /// <param name="streamWriter">The stream writer.</param>
-        private void WaitForOtherPlayerToJoin(Player player, StreamWriter streamWriter)
-        {
-            streamWriter.WriteLine("wait");//writes the result back to the client 
-            streamWriter.Flush();
-
-            while (player.NeedToWait)
-            {
-                System.Threading.Thread.Sleep(1000);
-            }
-
-        }
-
-        /// <summary>
-        /// Sends the oponent played message.
-        /// </summary>
-        /// <param name="player">The player.</param>
-        /// <param name="streamWriter">The stream writer.</param>
-        private void SendOponentPlayedMessage(Player player, StreamWriter streamWriter)
-        {
-            string message = player.Message;
-            streamWriter.WriteLine(message);
-            streamWriter.Flush();
-            player.Message = "";
-            player.NeedToBeNotified = false;
-        }
-
-
 
         /// <summary>
         /// Gets the i controller.

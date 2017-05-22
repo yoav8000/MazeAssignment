@@ -6,14 +6,14 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using System.Configuration;
 
-namespace TheClient
+
+namespace ClientDll
 {
-    /// <summary>
-    /// Client class
-    /// </summary>
-    class Client
+   public class Client
     {
+
         /// <summary>
         /// The members
         /// </summary>
@@ -24,6 +24,8 @@ namespace TheClient
         private TcpClient theClient;
         private IPEndPoint ep;
         private int portNumber;
+        private string sendMessage;
+        private string recievedMessage;
 
 
         /// <summary>
@@ -38,8 +40,6 @@ namespace TheClient
             CreateANewConnection();
             communicate = true;
             streamWriter.AutoFlush = true;
-            
-
         }
 
 
@@ -115,14 +115,43 @@ namespace TheClient
                 this.communicate = value;
             }
         }
+
+        public string SendMessage
+        {
+            get
+            {
+                return this.sendMessage;
+            }
+            set
+            {
+                this.sendMessage = value;
+            }
+        }
+
+
+        public string RecievedMessage
+        {
+            get
+            {
+                return this.recievedMessage;
+            }
+            set
+            {
+                this.recievedMessage = value;
+            }
+        }
+
         public void ReadMessage()
         {
             try
             {
                 string result = StreamReader.ReadLine();
-               if (result!=null)
+               
+
+                 if (result != null)
                 {
-                   
+                    recievedMessage = "";
+                    recievedMessage = result;
                     Console.WriteLine(result);
                     string[] arr;
                     arr = result.Split(' ');
@@ -130,15 +159,13 @@ namespace TheClient
                     {
                         Console.WriteLine("there was an error please type another command ");
                     }
-
-
                 }
             }
 
             catch
             {
                 communicate = false;
-              
+
             }
         }
 
@@ -150,10 +177,15 @@ namespace TheClient
         /// </summary>
         public void WriteMessage()
         {
-
+            string command = null;
             Console.WriteLine("Please enter a command: ");
+            if(sendMessage != null)
+            {
+                command = sendMessage;
+            }
 
-            string command = Console.ReadLine();
+
+            //string command = Console.ReadLine();
             if (command != null && command != " ")
             {
                 Console.WriteLine($"the command is: {command} ");
@@ -163,9 +195,9 @@ namespace TheClient
                     communicate = true;
 
                 }
-
                 StreamWriter.WriteLine(command);
                 StreamWriter.Flush();
+                SendMessage = null;
             }
         }
 
@@ -193,7 +225,54 @@ namespace TheClient
         }
 
 
+
+
+        public void StartCommunicating()
+        {
+            System.Threading.Thread.Sleep(1000);// make sure that the server will react to the connection request.
+
+            // int port = int.Parse(ConfigurationManager.AppSettings["portNumber"]);//fix the port
+            int port = 55555;
+            IPEndPoint ep = new IPEndPoint(IPAddress.Parse("127.0.0.1"), port);
+
+            Client client = new Client(ep, port);
+
+            Task task = new Task(() =>//create a reading thread from the server.
+            {
+                while (true)
+                {
+                    while (client.Communicate)
+                    {
+                        client.ReadMessage();
+                    }
+                    System.Threading.Thread.Sleep(50);
+                }
+            });
+            task.Start();
+            Task task1 = new Task(() =>//create a writing thread to the server.
+            {
+                while (true)
+                {
+                    while (client.Communicate)
+                    {
+                        client.WriteMessage();
+                    }
+
+                }
+            });
+            task1.Start();
+
+            task.Wait();
+            task1.Wait();
+
+            client.CloseConnection();
+
+        }
+
     }
-    
 }
+
+
+
+
 

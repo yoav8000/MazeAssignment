@@ -28,7 +28,7 @@ namespace TheServer.TheModel
         private IController icontroller;
         private Dictionary<string, MazeGame> activeMultiPlayerMazes;
         private Dictionary<Player, MazeGame> playersAndGames;
-        private List<Player> playersThatWait;
+       
 
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace TheServer.TheModel
             this.joinableMazes = new Dictionary<string, MazeGame>();
             this.activeMultiPlayerMazes = new Dictionary<string, MazeGame>();
             this.playersAndGames = new Dictionary<Player, MazeGame>();
-            this.playersThatWait = new List<Player>();
+        
         }
 
         public Model()
@@ -59,7 +59,7 @@ namespace TheServer.TheModel
             this.joinableMazes = new Dictionary<string, MazeGame>();
             this.activeMultiPlayerMazes = new Dictionary<string, MazeGame>();
             this.playersAndGames = new Dictionary<Player, MazeGame>();
-            this.playersThatWait = new List<Player>();
+            
         }
 
         /// <summary>
@@ -225,8 +225,7 @@ namespace TheServer.TheModel
         /// <exception cref="System.Exception">there is another maze with the same name</exception>
         public Maze GenerateteSinglePlayerMaze(string name, int rows, int cols, Player player)
         {
-            if (!playersThatWait.Contains(player))
-            {
+           
                 if (NameExistsInDictionary(singlePlayerMazes, name))
                 {
                     throw new Exception("there is another maze with the same name");
@@ -235,8 +234,7 @@ namespace TheServer.TheModel
                 maze.Name = name;
                 singlePlayerMazes[name] = maze;
                 return maze;
-            }
-            return null;
+          
         }
 
         /// <summary>
@@ -249,8 +247,7 @@ namespace TheServer.TheModel
         /// <returns></returns>
         public string GenerateMultiPlayerMaze(string name, int rows, int cols,Player player)
         {
-            if (!playersThatWait.Contains(player))
-            {
+           
                 if ((joinableMazes.ContainsKey(name)) || (activeMultiPlayerMazes.ContainsKey(name)))
                 {
                     return "Error: there is a maze with the same name";
@@ -261,13 +258,12 @@ namespace TheServer.TheModel
                 MultiPlayerMazes[name] = maze;
                 MazeGame game = new MazeGame(name, maze, playersCapacity);
                 JoinableMazes[name] = game;
-               // player.NeedToWait = true;
+                player.NeedToWait = true;
                 game.AddPlayer(player);//the player needs to wait for another player to join the game.
-                playersThatWait.Add(player);
+                
                 player.MazeName = game.MazeName;
                 return maze.ToJSON();
-            }
-            return null;
+            
         }
 
 
@@ -291,8 +287,7 @@ namespace TheServer.TheModel
         /// <returns></returns>
         public string SolveMaze(string mazeName, string algorithm, Player player)
         {
-            if (!playersThatWait.Contains(player))
-            {
+            
                 if (!NameExistsInDictionary(SinglePlayerMazes, mazeName))
                 {
                     return ($"Error: there is no  maze with this name {mazeName}");
@@ -310,8 +305,7 @@ namespace TheServer.TheModel
                 SolutionAdapter solutionAdapter = new SolutionAdapter(solution, mazeName);
                 MazeSolutions[mazeName] = solution;
                 return solutionAdapter.ToJson();
-            }
-            return null;
+           
         }
 
 
@@ -329,12 +323,10 @@ namespace TheServer.TheModel
 
         public List<string> GetNamesOfJoinableMazes(Player player)
         {
-            if (!playersThatWait.Contains(player))
-            {
+           
                 List<string> mazesList = new List<string>(JoinableMazes.Keys.ToList());
                 return mazesList;
-            }
-            return null;
+          
         }
 
 
@@ -348,8 +340,7 @@ namespace TheServer.TheModel
         /// <exception cref="System.Exception"></exception>
         public Maze JoinMaze(string mazeName, Player player)
         {
-            if (!playersThatWait.Contains(player))
-            {
+           
                 if (!joinableMazes.ContainsKey(mazeName))
                 {
                     throw new Exception($"there is no such maze with the name {mazeName}");
@@ -360,15 +351,15 @@ namespace TheServer.TheModel
                     MazeGame game = JoinableMazes[mazeName];
                     game.AddPlayer(player);
                     player.MazeName = game.MazeName;
-                    game.NotifyOtherPlayers("a player joined the game", player);
+                    //game.NotifyOtherPlayers("a player joined the game", player);
 
                     if (game.GameCapacity == game.Players.Count)
                     {
                         ActiveMultiPlayerMazes[mazeName] = game;
                         joinableMazes.Remove(mazeName);
                         ReleasePlayerFromWaitingMode(game);
-                        game.NotifyOtherPlayers(game.Maze.ToJSON(), player);
-                        game.NotifyAllPlayers("The Game Has Started");
+                        //game.NotifyOtherPlayers(game.Maze.ToJSON(), player);
+                        //game.NotifyAllPlayers("The Game Has Started");
                     }
                     return game.Maze;
 
@@ -377,20 +368,16 @@ namespace TheServer.TheModel
                 {
                     return null;
                 }
-            }
-            return null;
+          
         }
 
         private void ReleasePlayerFromWaitingMode(MazeGame game)//////////////////////////added a change.
         {
             foreach(Player p in game.Players)
             {
-                if (playersThatWait.Contains(p)){//check
-                    playersThatWait.Remove(p);
-                }
+                
                 PlayersAndGames[p] = game;
-
-              //  p.NeedToWait = false;
+                p.NeedToWait = false;
             }
 
         }
@@ -404,8 +391,7 @@ namespace TheServer.TheModel
         /// <returns></returns>
         public string Play(string []args, Player player)
         {
-            if (!playersThatWait.Contains(player))
-            {
+           
                 string direction = args[0];
                 if (player.MazeName == null)
                 {
@@ -426,9 +412,9 @@ namespace TheServer.TheModel
                 jobject["Name"] = game.MazeName;
                 jobject["Direction"] = direction;
                 game.NotifyOtherPlayers(jobject.ToString(), player);
-                return "";
-            }
-            return null;
+                //return "";
+                return null;
+           
         }
 
         /// <summary>
@@ -439,20 +425,20 @@ namespace TheServer.TheModel
         /// <returns></returns>
         public string Close(string mazeName, Player player)
         {
-            if (!playersThatWait.Contains(player))
-            {
+            
                 if (!ActiveMultiPlayerMazes.ContainsKey(mazeName))
                 {
                     return $"Error: there is no such maze to close named {mazeName}";
                 }
                 MazeGame game = ActiveMultiPlayerMazes[mazeName];//getting the game.
-                game.NotifyAllPlayers("The Game Was Closed");
+
+                game.NotifyAllPlayers("The Game Was Closed");//for me.
+
                 RemovePlayersFromPlayersAndGames(mazeName); //getting the players of the dictionary of the players and games
-                game.CloseAllClients();
+         //       game.CloseAllClients();
                 activeMultiPlayerMazes.Remove(mazeName);
                 return "";
-            }
-            return null;
+         
         }
 
         /// <summary>

@@ -47,14 +47,19 @@ namespace TheServer.TheController.Commands.MultiPlayerCommands
                 return "Error: One of the second and third argument isn't a valid number";
             }
             string result = IModel.GenerateMultiPlayerMaze(mazeName, rows, cols, player);
-            if (result == null)
-            {
-                return result;
-            }else if (result.StartsWith("Error")){
-                return result;
-            }
-            return "wait";
+            WaitForOtherPlayerToJoinTheGame(player);
 
+            return result;
+
+        }
+
+
+        private void WaitForOtherPlayerToJoinTheGame(Player p)
+        {
+            while (p.NeedToWait)
+            {
+                System.Threading.Thread.Sleep(1000);
+            }
         }
 
     }

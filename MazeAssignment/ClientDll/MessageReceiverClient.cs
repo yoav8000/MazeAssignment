@@ -7,23 +7,18 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TheClient
+namespace ClientDll
 {
-    /// <summary>
-    /// Client class
-    /// </summary>
-    class Client
+    public class MessageReceiverClient
     {
-        /// <summary>
-        /// The members
-        /// </summary>
         private bool communicate;
         private NetworkStream stream;
         private StreamReader streamReader;
-        private StreamWriter streamWriter;
         private TcpClient theClient;
         private IPEndPoint ep;
         private int portNumber;
+        private string recievedMessage;
+
 
 
         /// <summary>
@@ -31,17 +26,36 @@ namespace TheClient
         /// </summary>
         /// <param name="ep">The ep.</param>
         /// <param name="portNumber">The port number.</param>
-        public Client(IPEndPoint ep, int portNumber)
+        public MessageReceiverClient(IPEndPoint ep, int portNumber)
         {
             this.ep = ep;
             this.portNumber = portNumber;
             CreateANewConnection();
             communicate = true;
-            streamWriter.AutoFlush = true;
-            
-
+           
         }
 
+        public void CreateANewConnection()
+        {
+            TheClient = new TcpClient();
+            TheClient.Connect(this.ep);//connect to the server
+            this.stream = TheClient.GetStream();
+            StreamReader = new StreamReader(TheClient.GetStream());
+            Console.WriteLine("you are connected ");
+            communicate = true;
+        }
+
+        public string RecievedMessage
+        {
+            get
+            {
+                return this.recievedMessage;
+            }
+            set
+            {
+                this.recievedMessage = value;
+            }
+        }
 
         /// <summary>
         /// Gets or sets the client.
@@ -80,24 +94,7 @@ namespace TheClient
             }
         }
 
-        /// <summary>
-        /// Gets or sets the stream writer.
-        /// </summary>
-        /// <value>
-        /// The stream writer.
-        /// </value>
-        public StreamWriter StreamWriter
-        {
-            get
-            {
-                return this.streamWriter;
-            }
-            set
-            {
-                this.streamWriter = value;
-            }
-        }
-
+        
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="Client"/> is communicate.
         /// </summary>
@@ -115,85 +112,39 @@ namespace TheClient
                 this.communicate = value;
             }
         }
-        public void ReadMessage()
+
+
+        public string ReadMessage()
         {
             try
             {
                 string result = StreamReader.ReadLine();
-               if (result!=null)
+                if (result != null)
                 {
-                   
-                    Console.WriteLine(result);
+                    
+                 //   Console.WriteLine(result);
                     string[] arr;
                     arr = result.Split(' ');
                     if (arr[0].StartsWith("Error"))
                     {
                         Console.WriteLine("there was an error please type another command ");
                     }
-
-
+                    else
+                    {
+                        recievedMessage = result;
+                        return RecievedMessage;
+                    }
                 }
+                return null;
             }
 
             catch
             {
-                communicate = false;
-              
+                communicate = false; //connection was closed at ther server side.
+                return null;
+
             }
         }
-
-
-
-
-        /// <summary>
-        /// Writes the message.
-        /// </summary>
-        public void WriteMessage()
-        {
-
-            Console.WriteLine("Please enter a command: ");
-
-            string command = Console.ReadLine();
-            if (command != null && command != " ")
-            {
-                Console.WriteLine($"the command is: {command} ");
-                if (!communicate)
-                {
-                    CreateANewConnection();
-                    communicate = true;
-
-                }
-
-                StreamWriter.WriteLine(command);
-                StreamWriter.Flush();
-            }
-        }
-
-
-        /// <summary>
-        /// Closes the connection.
-        /// </summary>
-        public void CloseConnection()
-        {
-            TheClient.Close();
-        }
-
-        /// <summary>
-        /// Creates a new connection.
-        /// </summary>
-        public void CreateANewConnection()
-        {
-            TheClient = new TcpClient();
-            TheClient.Connect(this.ep);//connect to the server
-            this.stream = TheClient.GetStream();
-            StreamReader = new StreamReader(TheClient.GetStream());
-            StreamWriter = new StreamWriter(TheClient.GetStream());
-            Console.WriteLine("you are connected ");
-            communicate = true;
-        }
-
 
     }
-    
 }
-

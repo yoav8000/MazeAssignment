@@ -18,22 +18,9 @@ namespace TheServer.TheMazeGame
         private string mazeName;
         private TcpClient client;
         private string message;
-        private bool needToBeNotified;
+       
 
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Player"/> class.
-        /// </summary>
-        /// <param name="mazeName">Name of the maze.</param>
-        /// <param name="client">The client.</param>
-        public Player(string mazeName, TcpClient client = null)
-        {
-            this.needToWait = false;
-            this.communicate = true;
-            this.mazeName = mazeName;
-            this.client = client;
-  
-        }
+     
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Player"/> class.
@@ -47,18 +34,7 @@ namespace TheServer.TheMazeGame
             this.client = client;
           
         }
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Player"/> class.
-        /// </summary>
-        public Player()
-        {
-            this.needToWait = false;
-            this.communicate = true;
-            this.mazeName = null;
-            this.client = null;
-           
-
-        }
+       
 
 
         /// <summary>
@@ -135,18 +111,7 @@ namespace TheServer.TheMazeGame
             }
         }
 
-
-        /// <summary>
-        /// Waits for event.
-        /// </summary>
-        /// <param name="waitFor">The wait for.</param>
-        public void WaitForEvent(string waitFor)
-        {
-            NeedToWait = true;
-
-
-        }
-
+        
         /// <summary>
         /// Gets or sets the message.
         /// </summary>
@@ -179,24 +144,7 @@ namespace TheServer.TheMazeGame
 
 
 
-        /// <summary>
-        /// Gets or sets a value indicating whether [need to be notified].
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if [need to be notified]; otherwise, <c>false</c>.
-        /// </value>
-        public bool NeedToBeNotified
-        {
-            get
-            {
-                return this.needToBeNotified;
-            }
-            set
-            {
-                this.needToBeNotified = value;
-            }
-        }
-
+      
 
         /// <summary>
         /// Equalses the specified other.
