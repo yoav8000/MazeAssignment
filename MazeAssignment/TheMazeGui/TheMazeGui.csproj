@@ -63,12 +63,14 @@
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Model\AnAbstractPlayerModel\PlayerModel.cs" />
     <Compile Include="Model\IClientModel.cs" />
     <Compile Include="Model\TheMultiPlayerModel\MultiPlayerModel.cs" />
     <Compile Include="Model\TheSettingsModel\ISettingsModel.cs" />
     <Compile Include="Model\TheSettingsModel\SinglePlayerSettingsModel.cs" />
     <Compile Include="Model\TheSinglePlayerModel\SinglePlayerModel.cs" />
     <Compile Include="Settings.cs" />
+    <Compile Include="ViewModel\AnAbstractPlayerVM\PlayerViewModel.cs" />
     <Compile Include="ViewModel\IClientViewModel.cs" />
     <Compile Include="ViewModel\SettingsViewModel.cs" />
     <Compile Include="ViewModel\SinglePlayerViewModel.cs" />

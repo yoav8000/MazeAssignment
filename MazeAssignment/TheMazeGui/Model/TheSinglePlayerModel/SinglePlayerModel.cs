@@ -8,40 +8,15 @@ using MazeLib;
 using TheClientDll;
 using TheMazeGui.Model.TheSettingsModel;
 using Newtonsoft.Json.Linq;
-
+using TheMazeGui.Model.AnAbstractPlayerModel;
 namespace TheMazeGui.Model.TheSinglePlayerModel
 {
-    public class SinglePlayerModel : IClientModel
+    public class SinglePlayerModel : PlayerModel
     {
-        private Position playerPosition;
-        private string mazeName;
-        private string rows;
-        private string cols;
-        private string maze;
-        private Position initialPosition;
-        private Position goalPosition;
-        private IClient singlePlayerClient;
-        private string ipAddress;
-        private int portNumber;
-        private volatile bool stop;
-        Maze resultMaze;
+
         private int searchAlgorithm;
         private string mazeSolution;
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        public string MazeName
-        {
-            get
-            {
-                return ResultMaze.Name;
-            }
-            set
-            {
-                mazeName = value;
-                NotifyPropertyChanged("MazeName");
-            }
-        }
 
 
         public string MazeSolution
@@ -53,57 +28,6 @@ namespace TheMazeGui.Model.TheSinglePlayerModel
             set
             {
                 mazeSolution = value;
-            }
-        }
-
-        public string Rows
-        {
-            get
-            {
-                return ResultMaze.Rows.ToString();
-            }
-            set
-            {
-                rows = value;
-            }
-        }
-
-        public string Cols
-        {
-            get
-            {
-                return ResultMaze.Cols.ToString();
-            }
-            set
-            {
-                cols = value;
-            }
-        }
-
-
-        public string IpAddress
-        {
-            get
-            {
-                return this.ipAddress;
-            }
-            set
-            {
-                ipAddress = value;
-
-            }
-        }
-
-
-        public int PortNumber
-        {
-            get
-            {
-                return this.portNumber;
-            }
-            set
-            {
-                this.portNumber = value;
             }
         }
 
@@ -121,130 +45,18 @@ namespace TheMazeGui.Model.TheSinglePlayerModel
             }
         }
 
-        public SinglePlayerModel(IClient client)
+        public SinglePlayerModel(ISettingsModel settingsModel) : base(settingsModel)
         {
-            //   this.singlePlayerClient = client;
-            //   this.searchAlgo = Properties.Settings.Default.SearchAlgorithm;
-        }
 
-        public SinglePlayerModel(ISettingsModel settingsModel)
-        {
-            SinglePlayerClient = new SinglePlayerClient();
-            IpAddress = settingsModel.ServerIp;
-            PortNumber = settingsModel.ServerPort;
-            SinglePlayerClient.setNetworkStat(IpAddress, PortNumber);
+            MyClient = new SinglePlayerClient();
+            MyClient.setNetworkStat(IpAddress, PortNumber);
             SearchAlgorithm = settingsModel.SearchAlgorithm;
         }
 
-        public bool Stop
-        {
-            get
-            {
-                return this.stop;
-            }
-            set
-            {
-                this.stop = value;
-            }
-        }
-
-
-        public Position PlayerPosition
-        {
-            get
-            {
-                return this.playerPosition;
-            }
-
-            set
-            {
-                this.playerPosition = value;
-                NotifyPropertyChanged("PlayerPosition");
-            }
-        }
-
-        public string Maze
-        {
-            get
-            {
-                return maze;
-            }
-
-            set
-            {
-                maze = value;
-                NotifyPropertyChanged("Maze");
-            }
-        }
-
-        public Maze ResultMaze
-        {
-            get
-            {
-                return this.resultMaze;
-            }
-            set
-            {
-                this.resultMaze = value;
-            }
-        }
-
-        public Position InitialPosition
-        {
-            get
-            {
-                return initialPosition;
-            }
-
-            set
-            {
-                initialPosition = value;
-                NotifyPropertyChanged("InitialPosition");
-            }
-        }
-
-        public Position GoalPosition
-        {
-            get
-            {
-                return goalPosition;
-            }
-
-            set
-            {
-                goalPosition = value;
-                NotifyPropertyChanged("GoalPosition");
-            }
-        }
-
-        public IClient SinglePlayerClient
-        {
-            get
-            {
-                return singlePlayerClient;
-            }
-
-            set
-            {
-                this.singlePlayerClient = value;
-            }
-
-        }
-
-
-        public void NotifyPropertyChanged(string propName)
-        {
-            if (this.PropertyChanged != null)
-            {
-                this.PropertyChanged(this, new PropertyChangedEventArgs(propName));
-            }
-        }
-
-
         public void GenerateSinglePlayerMaze(string mazeName, int rows, int cols)
         {
-            SinglePlayerClient.Write("generate" + " " + mazeName + " " + rows + " " + cols);
-            string result = SinglePlayerClient.Read();
+            SendMessageToServer("generate" + " " + mazeName + " " + rows + " " + cols);
+            string result = RecieveMessage();
             if (result != null && (!result.Contains("Error")))
             {
 
@@ -258,102 +70,10 @@ namespace TheMazeGui.Model.TheSinglePlayerModel
             }
         }
 
-        public void MovePlayer(string keyDirection)
+
+        public string RecieveMessage()
         {
-
-            switch (keyDirection)
-            {
-                case "Down":
-                    {
-                        if (PlayerCanMove(Direction.Down))
-                        {
-                            PlayerPosition = new Position(PlayerPosition.Row + 1, PlayerPosition.Col);
-                        }
-                        break;
-                    }
-                case "Up":
-                    {
-                        if (PlayerCanMove(Direction.Up))
-                        {
-                            PlayerPosition = new Position(PlayerPosition.Row - 1, PlayerPosition.Col);
-                        }
-                        break;
-                    }
-                case "Right":
-                    {
-                        if (PlayerCanMove(Direction.Right))
-                        {
-                            PlayerPosition = new Position(PlayerPosition.Row, PlayerPosition.Col + 1);
-                        }
-                        break;
-                    }
-                case "Left":
-                    {
-                        if (PlayerCanMove(Direction.Left))
-                        {
-                            PlayerPosition = new Position(PlayerPosition.Row, PlayerPosition.Col - 1);
-                        }
-                        break;
-                    }
-                default:
-                    {
-                        break;
-                    }
-            }
-
-        }
-
-        private bool PlayerCanMove(Direction direction)
-        {
-            int currentColPosition = PlayerPosition.Col;
-            int currentRowPosition = PlayerPosition.Row;
-
-            switch (direction)
-            {
-                case Direction.Left:
-                    {
-                        return ((currentColPosition - 1 >= 0) && ('0' == Maze[(currentRowPosition * int.Parse(Cols)) + currentColPosition - 1]
-                           || '*' == Maze[(currentRowPosition * int.Parse(Cols)) + currentColPosition - 1]
-                           || '#' == Maze[(currentRowPosition * int.Parse(Cols)) + currentColPosition - 1])
-                     );
-                    }
-
-                case Direction.Up:
-                    {
-                        return ((currentRowPosition - 1 >= 0) && ('0' == Maze[((currentRowPosition - 1) * int.Parse(Cols)) + currentColPosition]
-                            || '*' == Maze[((currentRowPosition - 1) * int.Parse(Cols)) + currentColPosition]
-                            || '#' == Maze[((currentRowPosition - 1) * int.Parse(Cols)) + currentColPosition])
-                  );
-                    }
-                case Direction.Down:
-                    {
-                        return ((currentRowPosition + 1 < int.Parse(Rows)) && ('0' == Maze[((currentRowPosition + 1) * int.Parse(Cols)) + currentColPosition]
-                             || '*' == Maze[((currentRowPosition + 1) * int.Parse(Cols)) + currentColPosition]
-                             || '#' == Maze[((currentRowPosition + 1) * int.Parse(Cols)) + currentColPosition])
-              );
-                    }
-                case Direction.Right:
-                    {
-                        return ((currentColPosition + 1 < int.Parse(Cols)) && ('0' == Maze[(currentRowPosition * int.Parse(Cols)) + currentColPosition + 1]
-                              || '*' == Maze[(currentRowPosition * int.Parse(Cols)) + currentColPosition + 1]
-                              || '#' == Maze[(currentRowPosition * int.Parse(Cols)) + currentColPosition + 1])
-                        );
-                    }
-            }
-            return false;
-        }
-
-
-
-        public void SendMessageToServer(string message)
-        {
-            singlePlayerClient.Write(message);
-        }
-
-
-        public string RecieveMessageFromServer()
-        {
-            string resultFromServer = singlePlayerClient.Read();
+            string resultFromServer = RecieveMessageFromServer();
             if (resultFromServer != null)
             {
                 if (resultFromServer.Contains("Maze"))
@@ -375,22 +95,6 @@ namespace TheMazeGui.Model.TheSinglePlayerModel
             return null;
         }
 
-
-
-
-
-
-        public void Connect(string ip, int port)
-        {
-            this.SinglePlayerClient.CreateNewConnection(ip, port);
-            Stop = false;
-        }
-
-        public void Disconnect()
-        {
-            singlePlayerClient.Disconnect();
-        }
-
         public void RestartMaze()
         {
             PlayerPosition = InitialPosition;
@@ -398,16 +102,16 @@ namespace TheMazeGui.Model.TheSinglePlayerModel
 
         public void SolveMaze()
         {
-            
-            
+
+
             string result;
             string solution;
             StringBuilder sb = new StringBuilder();
-          
+
             if (MazeSolution == null)
             {
-                SinglePlayerClient.Write("solve" + " " + MazeName + " " + SearchAlgorithm);
-                result = SinglePlayerClient.Read();
+                SendMessageToServer("solve" + " " + MazeName + " " + SearchAlgorithm);
+                result = RecieveMessageFromServer();
                 result = result.Replace(@"\", "");
                 string[] arr = result.Split(':');
                 arr = arr[2].Split(',');
@@ -418,7 +122,7 @@ namespace TheMazeGui.Model.TheSinglePlayerModel
             {
                 solution = MazeSolution;
             }
-            if(PlayerPosition.Row != InitialPosition.Row || PlayerPosition.Col != InitialPosition.Col )
+            if (PlayerPosition.Row != InitialPosition.Row || PlayerPosition.Col != InitialPosition.Col)
             {
                 RestartMaze();
             }
@@ -469,18 +173,8 @@ namespace TheMazeGui.Model.TheSinglePlayerModel
                 MazeSolution = sb.ToString();
             });
             task.Start();
-          
+
         }
 
-
-    
-
-
-
-
-    public void Start()
-    {
-        throw new NotImplementedException();
     }
-}
 }

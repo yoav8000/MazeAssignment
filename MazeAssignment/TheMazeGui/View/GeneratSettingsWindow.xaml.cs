@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using TheMazeGui.ViewModel;
 using TheMazeGui.Model.TheSettingsModel;
+using System.Threading;
 namespace TheMazeGui.View
 {
     /// <summary>
@@ -21,20 +22,41 @@ namespace TheMazeGui.View
     public partial class GeneratSettingsWindow : Window
     {
         private SettingsViewModel vm;
+        private static GeneratSettingsWindow instance;
+        public static Mutex MuTexLock = new Mutex();
 
-        public GeneratSettingsWindow()
+        private GeneratSettingsWindow()
         {
             InitializeComponent();
             vm = new SettingsViewModel(new SettingsModel());
             this.DataContext = vm;
         }
 
+
+        public static GeneratSettingsWindow GetInstance()
+        {
+              if(MuTexLock == null)
+            {
+                MuTexLock = new Mutex();
+            }
+
+            MuTexLock.WaitOne();
+                if (instance == null)
+                {
+                    instance = new GeneratSettingsWindow();
+                }
+                MuTexLock.ReleaseMutex();
+                return instance;
+            
+        }
+
         private void btnOK_Click(object sender, RoutedEventArgs e)
         {
             vm.SaveSettings();
+            Hide();
             MainWindow win = (MainWindow)Application.Current.MainWindow;
             win.Show();
-            this.Close();
+
         }
 
         private void btnCancel_Click(object sender, RoutedEventArgs e)
@@ -42,6 +64,11 @@ namespace TheMazeGui.View
             MainWindow win = (MainWindow)Application.Current.MainWindow;
             win.Show();
             this.Close();
+        }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            instance = null;
         }
     }
 }

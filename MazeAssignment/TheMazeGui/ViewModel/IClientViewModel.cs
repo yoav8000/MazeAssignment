@@ -7,7 +7,5 @@ using System.Threading.Tasks;
 
 namespace TheMazeGui.ViewModel
 {
-    public interface IClientViewModel:INotifyPropertyChanged
-    {
-    }
+    public interface IClientViewModel:INotifyPropertyChanged{}
 }

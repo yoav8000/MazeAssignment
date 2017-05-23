@@ -16,6 +16,7 @@ namespace TheClient
     {
         static void Main(string[] args)
         {
+            /*
             System.Threading.Thread.Sleep(1000);// make sure that the server will react to the connection request.
 
             int port = int.Parse(ConfigurationManager.AppSettings["portNumber"]);
@@ -65,7 +66,7 @@ namespace TheClient
             task1.Wait();
     
             client.CloseConnection();
-           
+           */
         }
     }
 }

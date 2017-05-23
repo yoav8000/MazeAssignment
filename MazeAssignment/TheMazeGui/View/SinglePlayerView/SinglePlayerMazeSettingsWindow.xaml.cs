@@ -42,6 +42,7 @@ namespace TheMazeGui.View.SinglePlayerView
             SinglePlayerGameWindow game = new SinglePlayerGameWindow(MazeSettingsUC.txtMazeName.Text, int.Parse(MazeSettingsUC.txtMazeRows.Text), int.Parse(MazeSettingsUC.txtMazeCols.Text));
             this.Hide();
             game.ShowDialog();
+            Close();
         }
 
         private void MazeSettingsUC_Loaded(object sender, RoutedEventArgs e)

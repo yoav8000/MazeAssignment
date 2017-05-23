@@ -64,6 +64,8 @@ namespace TheMazeGui.View.SinglePlayerView
             {
 
                 Close();
+                MainWindow mainWin = new MainWindow();
+                mainWin.ShowDialog();
 
             }
         }

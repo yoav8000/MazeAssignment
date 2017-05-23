@@ -33,13 +33,11 @@ namespace TheMazeGui
         }
         private void SinglePlayerButton_Click(object sender, RoutedEventArgs e)
         {
-            while (!IsClosed)
-            {
                 ISettingsModel settingsModel = new SettingsModel();
                 SinglePlayerMazeSettingsWindow theSettingsModelWindow = new SinglePlayerMazeSettingsWindow(settingsModel);
                 this.Hide();
                 theSettingsModelWindow.ShowDialog();
-            }
+           
         }
 
 
@@ -51,7 +49,7 @@ namespace TheMazeGui
 
         private void SettingsButton_Click(object sender, RoutedEventArgs e)
         {
-            GeneratSettingsWindow g = new GeneratSettingsWindow();
+            GeneratSettingsWindow g = GeneratSettingsWindow.GetInstance();
             g.ShowDialog();
             
         }

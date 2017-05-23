@@ -7,7 +7,7 @@
         xmlns:TheUserControl="clr-namespace:TheMazeGui.View.TheUserControl" 
         mc:Ignorable="d"
         Title="SinglePlayerMazeSettingsWindow" Height="210" Width="300" WindowStartupLocation="CenterScreen">
-    <Grid>
+    <Grid Margin="1,1,-1.4,-1">
 
         <TheUserControl:SettingsUserControl x:Name="MazeSettingsUC" HorizontalAlignment="Left"  VerticalAlignment="Top"  Loaded="MazeSettingsUC_Loaded" Margin="5,15,0,0" Width="285" Height="110"/>
 

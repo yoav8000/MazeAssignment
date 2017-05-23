@@ -39,6 +39,7 @@ namespace TheMazeGui.ViewModel
             get { return model.MazeRows; }
             set
             {
+                model.MazeRows = value;
                 NotifyPropertyChanged("MazeRows");
             }
         }
