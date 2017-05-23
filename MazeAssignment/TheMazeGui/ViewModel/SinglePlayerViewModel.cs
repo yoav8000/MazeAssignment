@@ -140,6 +140,11 @@ namespace TheMazeGui.ViewModel
             singlePModel.MovePlayer(direction);
         }
 
+        public void RestartMaze()
+        {
+            SinglePModel.RestartMaze();
+        }
+
     }
 
 

@@ -292,7 +292,7 @@ namespace TheMazeGui.View.TheUserControl
             
             if (xGoal == x && yGoal == y)
             {
-                if (MessageBox.Show("Congratulations! you have reached the Destination", "Question", MessageBoxButton.OK) == MessageBoxResult.No)
+                if (MessageBox.Show("Congratulations! you have reached the Destination", "Congratulations!", MessageBoxButton.OK) == MessageBoxResult.No)
                 {
                     int X = 2;
                 }
@@ -302,13 +302,12 @@ namespace TheMazeGui.View.TheUserControl
                 }
             }
             
-            
+        }
 
-
-         
-
-
-
+        public void RestartMaze()
+        {
+            PlayerPosition = InitialPosition;
+          
         }
 
 

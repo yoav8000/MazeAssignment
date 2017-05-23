@@ -38,7 +38,17 @@ namespace TheMazeGui.View.SinglePlayerView
 
         private void RestartGameButton_Click(object sender, RoutedEventArgs e)
         {
-            int x = 2;
+            if (MessageBox.Show("Are you sure you want to restart the game?", "Restart the game",MessageBoxButton.OKCancel) == MessageBoxResult.OK)
+            {
+
+                vm.RestartMaze();
+              
+            }
+            else 
+            {
+
+            }
+            
         }
 
         private void SolveMazeButton_Click(object sender, RoutedEventArgs e)
@@ -56,6 +66,7 @@ namespace TheMazeGui.View.SinglePlayerView
             Window window = Window.GetWindow(this);
             window.KeyDown += HandleKeyPress;
         }
+
         private void HandleKeyPress(object sender, KeyEventArgs e)
         {
             string direction = "";
@@ -90,7 +101,6 @@ namespace TheMazeGui.View.SinglePlayerView
             {
                 vm.MovePlayer(direction);
             }
-
         }
     }
 }

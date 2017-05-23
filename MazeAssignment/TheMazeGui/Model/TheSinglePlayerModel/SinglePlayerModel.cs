@@ -357,11 +357,14 @@ namespace TheMazeGui.Model.TheSinglePlayerModel
             singlePlayerClient.Disconnect();
         }
 
-        public void Start()
+        public void RestartMaze()
         {
-
+            PlayerPosition = InitialPosition;
         }
 
-      
+        public void Start()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
