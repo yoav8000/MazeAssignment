@@ -34,7 +34,7 @@ namespace SearchAlgorithmsLib
 
                 default:
                     {
-                        throw new Exception("there is no such search algorithm in the factory!");
+                        throw new Exception("Error: there is no such search algorithm in the factory!");
                     }
             }
 

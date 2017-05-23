@@ -44,21 +44,28 @@ namespace TheMazeGui.View.SinglePlayerView
                 vm.RestartMaze();
               
             }
-            else 
-            {
-
-            }
             
         }
 
         private void SolveMazeButton_Click(object sender, RoutedEventArgs e)
         {
-            int x = 2;
+            if (MessageBox.Show("Are you sure you want to solve the maze?", "Solve the maze", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
+            {
+
+                vm.SolveMaze();
+
+            }
+           
         }
 
         private void MainMenuButton_Click(object sender, RoutedEventArgs e)
         {
-            int x = 2;
+            if (MessageBox.Show("Are you sure you want to go back to the main menu?", "Go back to main menu", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
+            {
+
+                Close();
+
+            }
         }
 
         private void MazeBoard_Loaded(object sender, RoutedEventArgs e)
@@ -97,7 +104,7 @@ namespace TheMazeGui.View.SinglePlayerView
                         break;
                     }
             }
-            if (direction != "")
+            if (direction != "" && MazeBoard.PlayerPosition != MazeBoard.GoalPosition)
             {
                 vm.MovePlayer(direction);
             }

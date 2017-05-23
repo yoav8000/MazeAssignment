@@ -23,17 +23,30 @@ namespace TheMazeGui
     /// </summary>
     public partial class MainWindow : Window
     {
+        public bool IsClosed { get; private set; }
+
+       
+
         public MainWindow()
         {
             InitializeComponent();
         }
         private void SinglePlayerButton_Click(object sender, RoutedEventArgs e)
         {
-           
-            ISettingsModel settingsModel = new SettingsModel();
-            SinglePlayerMazeSettingsWindow theSettingsModelWindow = new SinglePlayerMazeSettingsWindow(settingsModel);
-            this.Hide();
-            theSettingsModelWindow.ShowDialog();  
+            while (!IsClosed)
+            {
+                ISettingsModel settingsModel = new SettingsModel();
+                SinglePlayerMazeSettingsWindow theSettingsModelWindow = new SinglePlayerMazeSettingsWindow(settingsModel);
+                this.Hide();
+                theSettingsModelWindow.ShowDialog();
+            }
+        }
+
+
+        protected override void OnClosed(EventArgs e)
+        {
+            base.OnClosed(e);
+            IsClosed = true;
         }
 
         private void SettingsButton_Click(object sender, RoutedEventArgs e)

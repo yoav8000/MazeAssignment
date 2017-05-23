@@ -47,7 +47,7 @@ namespace TheServer.TheController.Commands.SinglePlayerCommands
                 }
                 catch
                 {
-                    return "there is another maze with the same name";
+                    return "Error: there is another maze with the same name";
                 }
             }
             catch

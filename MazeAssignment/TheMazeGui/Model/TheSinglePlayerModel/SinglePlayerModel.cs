@@ -11,7 +11,7 @@ using Newtonsoft.Json.Linq;
 
 namespace TheMazeGui.Model.TheSinglePlayerModel
 {
-   public class SinglePlayerModel : IClientModel
+    public class SinglePlayerModel : IClientModel
     {
         private Position playerPosition;
         private string mazeName;
@@ -25,7 +25,8 @@ namespace TheMazeGui.Model.TheSinglePlayerModel
         private int portNumber;
         private volatile bool stop;
         Maze resultMaze;
-
+        private int searchAlgorithm;
+        private string mazeSolution;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -39,6 +40,19 @@ namespace TheMazeGui.Model.TheSinglePlayerModel
             {
                 mazeName = value;
                 NotifyPropertyChanged("MazeName");
+            }
+        }
+
+
+        public string MazeSolution
+        {
+            get
+            {
+                return mazeSolution;
+            }
+            set
+            {
+                mazeSolution = value;
             }
         }
 
@@ -76,9 +90,10 @@ namespace TheMazeGui.Model.TheSinglePlayerModel
             set
             {
                 ipAddress = value;
-                
+
             }
         }
+
 
         public int PortNumber
         {
@@ -92,10 +107,24 @@ namespace TheMazeGui.Model.TheSinglePlayerModel
             }
         }
 
+
+        public int SearchAlgorithm
+        {
+            get
+            {
+                return this.searchAlgorithm;
+            }
+            set
+            {
+                searchAlgorithm = value;
+
+            }
+        }
+
         public SinglePlayerModel(IClient client)
         {
-         //   this.singlePlayerClient = client;
-         //   this.searchAlgo = Properties.Settings.Default.SearchAlgorithm;
+            //   this.singlePlayerClient = client;
+            //   this.searchAlgo = Properties.Settings.Default.SearchAlgorithm;
         }
 
         public SinglePlayerModel(ISettingsModel settingsModel)
@@ -104,6 +133,7 @@ namespace TheMazeGui.Model.TheSinglePlayerModel
             IpAddress = settingsModel.ServerIp;
             PortNumber = settingsModel.ServerPort;
             SinglePlayerClient.setNetworkStat(IpAddress, PortNumber);
+            SearchAlgorithm = settingsModel.SearchAlgorithm;
         }
 
         public bool Stop
@@ -158,7 +188,7 @@ namespace TheMazeGui.Model.TheSinglePlayerModel
                 this.resultMaze = value;
             }
         }
-        
+
         public Position InitialPosition
         {
             get
@@ -186,7 +216,7 @@ namespace TheMazeGui.Model.TheSinglePlayerModel
                 NotifyPropertyChanged("GoalPosition");
             }
         }
-        
+
         public IClient SinglePlayerClient
         {
             get
@@ -200,8 +230,8 @@ namespace TheMazeGui.Model.TheSinglePlayerModel
             }
 
         }
-        
-    
+
+
         public void NotifyPropertyChanged(string propName)
         {
             if (this.PropertyChanged != null)
@@ -210,33 +240,34 @@ namespace TheMazeGui.Model.TheSinglePlayerModel
             }
         }
 
-        
-        public void GenerateSinglePlayerMaze(string mazeName,int rows, int cols)
+
+        public void GenerateSinglePlayerMaze(string mazeName, int rows, int cols)
         {
-            SinglePlayerClient.Write ("generate" +" "+ mazeName + " " + rows + " " + cols);
+            SinglePlayerClient.Write("generate" + " " + mazeName + " " + rows + " " + cols);
             string result = SinglePlayerClient.Read();
-            if (result != null)
+            if (result != null && (!result.Contains("Error")))
             {
-               
+
                 ResultMaze = MazeLib.Maze.FromJSON(result);
                 string temp = ResultMaze.ToString();
                 Maze = temp.Replace(Environment.NewLine, "");
                 GoalPosition = ResultMaze.GoalPos;//invokes the setter and activates the event.
                 InitialPosition = ResultMaze.InitialPos;//invokes the setter and activates the event.
                 PlayerPosition = InitialPosition;
-                
+
             }
         }
 
         public void MovePlayer(string keyDirection)
         {
-            
+
             switch (keyDirection)
             {
                 case "Down":
                     {
-                        if (PlayerCanMove(Direction.Down)){
-                            PlayerPosition = new Position(PlayerPosition.Row+1, PlayerPosition.Col );
+                        if (PlayerCanMove(Direction.Down))
+                        {
+                            PlayerPosition = new Position(PlayerPosition.Row + 1, PlayerPosition.Col);
                         }
                         break;
                     }
@@ -244,7 +275,7 @@ namespace TheMazeGui.Model.TheSinglePlayerModel
                     {
                         if (PlayerCanMove(Direction.Up))
                         {
-                            PlayerPosition = new Position(PlayerPosition.Row -1 , PlayerPosition.Col);
+                            PlayerPosition = new Position(PlayerPosition.Row - 1, PlayerPosition.Col);
                         }
                         break;
                     }
@@ -252,7 +283,7 @@ namespace TheMazeGui.Model.TheSinglePlayerModel
                     {
                         if (PlayerCanMove(Direction.Right))
                         {
-                            PlayerPosition = new Position(PlayerPosition.Row , PlayerPosition.Col+1);
+                            PlayerPosition = new Position(PlayerPosition.Row, PlayerPosition.Col + 1);
                         }
                         break;
                     }
@@ -260,7 +291,7 @@ namespace TheMazeGui.Model.TheSinglePlayerModel
                     {
                         if (PlayerCanMove(Direction.Left))
                         {
-                            PlayerPosition = new Position(PlayerPosition.Row, PlayerPosition.Col -1);
+                            PlayerPosition = new Position(PlayerPosition.Row, PlayerPosition.Col - 1);
                         }
                         break;
                     }
@@ -303,11 +334,11 @@ namespace TheMazeGui.Model.TheSinglePlayerModel
                     }
                 case Direction.Right:
                     {
-                        return ((currentColPosition + 1 < int.Parse(Cols)) &&( '0' == Maze[(currentRowPosition * int.Parse(Cols)) + currentColPosition + 1]
+                        return ((currentColPosition + 1 < int.Parse(Cols)) && ('0' == Maze[(currentRowPosition * int.Parse(Cols)) + currentColPosition + 1]
                               || '*' == Maze[(currentRowPosition * int.Parse(Cols)) + currentColPosition + 1]
                               || '#' == Maze[(currentRowPosition * int.Parse(Cols)) + currentColPosition + 1])
                         );
-                    }     
+                    }
             }
             return false;
         }
@@ -323,7 +354,7 @@ namespace TheMazeGui.Model.TheSinglePlayerModel
         public string RecieveMessageFromServer()
         {
             string resultFromServer = singlePlayerClient.Read();
-              if (resultFromServer != null)
+            if (resultFromServer != null)
             {
                 if (resultFromServer.Contains("Maze"))
                 {
@@ -342,13 +373,16 @@ namespace TheMazeGui.Model.TheSinglePlayerModel
                 return null;
             }
             return null;
-
-
         }
+
+
+
+
+
 
         public void Connect(string ip, int port)
         {
-            this.SinglePlayerClient.CreateNewConnection(ip,port);
+            this.SinglePlayerClient.CreateNewConnection(ip, port);
             Stop = false;
         }
 
@@ -362,9 +396,91 @@ namespace TheMazeGui.Model.TheSinglePlayerModel
             PlayerPosition = InitialPosition;
         }
 
-        public void Start()
+        public void SolveMaze()
         {
-            throw new NotImplementedException();
+            
+            
+            string result;
+            string solution;
+            StringBuilder sb = new StringBuilder();
+          
+            if (MazeSolution == null)
+            {
+                SinglePlayerClient.Write("solve" + " " + MazeName + " " + SearchAlgorithm);
+                result = SinglePlayerClient.Read();
+                result = result.Replace(@"\", "");
+                string[] arr = result.Split(':');
+                arr = arr[2].Split(',');
+                solution = arr[0];
+
+            }
+            else
+            {
+                solution = MazeSolution;
+            }
+            if(PlayerPosition.Row != InitialPosition.Row || PlayerPosition.Col != InitialPosition.Col )
+            {
+                RestartMaze();
+            }
+
+            Task task = new Task(() =>//creating a listening thread that keeps running.
+            {
+                for (int i = 0; i < solution.Length; i++)
+                {
+                    string direction = "";
+                    switch (solution[i])
+                    {
+                        case '0':
+                            {
+                                direction = "Left";
+                                break;
+                            }
+
+                        case '1':
+                            {
+                                direction = "Right";
+                                break;
+                            }
+                        case '2':
+                            {
+                                direction = "Up";
+                                break;
+                            }
+                        case '3':
+                            {
+                                direction = "Down";
+                                break;
+                            }
+                        default:
+                            {
+                                break;
+                            }
+
+
+
+                    }
+                    if (direction != "")
+                    {
+                        sb.Append(solution[i]);
+                        MovePlayer(direction);
+                        System.Threading.Thread.Sleep(200);
+                    }
+                }
+                MazeSolution = sb.ToString();
+            });
+            task.Start();
+          
         }
+
+
+    
+
+
+
+
+    public void Start()
+    {
+        throw new NotImplementedException();
     }
+}
 }

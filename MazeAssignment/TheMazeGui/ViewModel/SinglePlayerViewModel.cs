@@ -145,6 +145,11 @@ namespace TheMazeGui.ViewModel
             SinglePModel.RestartMaze();
         }
 
+        public void SolveMaze()
+        {
+            SinglePModel.SolveMaze();
+        }
+
     }
 
 
