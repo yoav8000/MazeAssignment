@@ -132,84 +132,6 @@ namespace TheMazeGui.View.TheUserControl
             }
         }
 
-
-
-
-        protected override void OnInitialized(EventArgs e)
-        {
-
-            InitializeComponent();
-
-            rows = int.Parse(Rows);
-            cols = int.Parse(Cols);
-            mazeGrid = new Rectangle[rows, cols];
-            rectangleHeight = MazeCanvas.Height / rows;
-            RectanglWidth = MazeCanvas.Width / cols;
-
-
-            barrierBrush = new SolidColorBrush(Colors.Black);
-            freeRecBrush = new SolidColorBrush(Colors.White);
-            playerPosBrush = new ImageBrush(new BitmapImage(new Uri(@"C:\Users\yoav gomberg\Desktop\minionphoto.png", UriKind.Relative)));
-            goalPosBrush = new ImageBrush(new BitmapImage(new Uri(@"C:\Users\yoav gomberg\Desktop\destinationimage.png", UriKind.Relative)));
-
-            for (int i = 0; i < rows; i++)
-            {
-                for (int j = 0; j < cols; j++)
-                {
-                    Rectangle rectangle = new Rectangle();
-                    rectangle.Height = RectangleHeight;
-                    rectangle.Width = RectanglWidth;
-                    if (Maze[(i * cols) + j] == '1')
-                    {
-                        rectangle.Fill = barrierBrush;
-                    }
-                    else
-                    {
-                        rectangle.Fill = freeRecBrush;
-                    }
-
-                    MazeCanvas.Children.Add(rectangle);
-                    Canvas.SetTop(rectangle, i * RectangleHeight);
-                    Canvas.SetLeft(rectangle, j * RectanglWidth);
-                    mazeGrid[i, j] = rectangle;
-                }
-            }
-
-             playerPositionRectangle = new Rectangle();
-            playerPositionRectangle.Height = RectangleHeight;
-            playerPositionRectangle.Width = RectanglWidth;
-            playerPositionRectangle.Fill = playerPosBrush;
-            MazeCanvas.Children.Add(playerPositionRectangle);
-
-
-            Rectangle goalPosRect = new Rectangle();
-            goalPosRect.Height = RectangleHeight;
-            goalPosRect.Width = RectanglWidth;
-            goalPosRect.Fill = goalPosBrush;
-            MazeCanvas.Children.Add(goalPosRect);
-
-
-
-
-            int x = GetX(InitialPosition);
-            int y = GetY(InitialPosition);
-
-            Canvas.SetTop(playerPositionRectangle, x * RectangleHeight);
-            Canvas.SetLeft(playerPositionRectangle, y * RectanglWidth);
-
-
-
-            x = GetX(GoalPosition);
-            y = GetY(GoalPosition);
-
-            Canvas.SetTop(goalPosRect, x * RectangleHeight);
-            Canvas.SetLeft(goalPosRect, y * RectanglWidth);
-            mazeGrid[x, y] = goalPosRect;
-
-            base.OnInitialized(e);
-        }
-
-
         public static int GetX(string position)
         {
             string[] arr = position.Split(',');
@@ -267,7 +189,85 @@ namespace TheMazeGui.View.TheUserControl
        "PlayerPosition",
        typeof(string),
        typeof(TheMazeBoard),
-       new PropertyMetadata(MovePlayerRectangle));
+       new PropertyMetadata(MovePlayerPositionRectangle));
+
+
+
+        protected override void OnInitialized(EventArgs e)
+        {
+
+            InitializeComponent();
+
+            rows = int.Parse(Rows);
+            cols = int.Parse(Cols);
+            mazeGrid = new Rectangle[rows, cols];
+            rectangleHeight = MazeCanvas.Height / rows;
+            RectanglWidth = MazeCanvas.Width / cols;
+
+
+            barrierBrush = new SolidColorBrush(Colors.Black);
+            freeRecBrush = new SolidColorBrush(Colors.White);
+            playerPosBrush = new ImageBrush(new BitmapImage(new Uri(@"pack://application:,,,/TheMazeGui;component/Resources/minionphoto.png")));
+            goalPosBrush = new ImageBrush(new BitmapImage(new Uri(@"pack://application:,,,/TheMazeGui;component/Resources/destinationimage.png")));
+
+            for (int i = 0; i < rows; i++)
+            {
+                for (int j = 0; j < cols; j++)
+                {
+                    Rectangle rectangle = new Rectangle();
+                    rectangle.Height = RectangleHeight;
+                    rectangle.Width = RectanglWidth;
+                    if (Maze[(i * cols) + j] == '1')
+                    {
+                        rectangle.Fill = barrierBrush;
+                    }
+                    else
+                    {
+                        rectangle.Fill = freeRecBrush;
+                    }
+
+                    MazeCanvas.Children.Add(rectangle);
+                    Canvas.SetTop(rectangle, i * RectangleHeight);
+                    Canvas.SetLeft(rectangle, j * RectanglWidth);
+                    mazeGrid[i, j] = rectangle;
+                }
+            }
+
+            playerPositionRectangle = new Rectangle();
+            playerPositionRectangle.Height = RectangleHeight;
+            playerPositionRectangle.Width = RectanglWidth;
+            playerPositionRectangle.Fill = playerPosBrush;
+            MazeCanvas.Children.Add(playerPositionRectangle);
+
+
+            Rectangle goalPosRect = new Rectangle();
+            goalPosRect.Height = RectangleHeight;
+            goalPosRect.Width = RectanglWidth;
+            goalPosRect.Fill = goalPosBrush;
+            MazeCanvas.Children.Add(goalPosRect);
+
+
+
+
+            int x = GetX(InitialPosition);
+            int y = GetY(InitialPosition);
+
+            Canvas.SetTop(playerPositionRectangle, x * RectangleHeight);
+            Canvas.SetLeft(playerPositionRectangle, y * RectanglWidth);
+
+
+
+            x = GetX(GoalPosition);
+            y = GetY(GoalPosition);
+
+            Canvas.SetTop(goalPosRect, x * RectangleHeight);
+            Canvas.SetLeft(goalPosRect, y * RectanglWidth);
+            mazeGrid[x, y] = goalPosRect;
+
+            base.OnInitialized(e);
+        }
+
+        
 
         public void MovePlayerRec(int x, int y)
         {
@@ -278,17 +278,40 @@ namespace TheMazeGui.View.TheUserControl
             }
         }
 
-        private static void MovePlayerRectangle(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void MovePlayerPositionRectangle(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             string newPos = e.NewValue as string;
             TheMazeBoard mazeBoard = d as TheMazeBoard;
             int x = GetX(newPos);
             int y = GetY(newPos);
+            string goalPos = mazeBoard.GoalPosition;
+            int xGoal = GetX(goalPos);
+            int yGoal = GetY(goalPos);
+
             mazeBoard.MovePlayerRec(x, y);
+            
+            if (xGoal == x && yGoal == y)
+            {
+                if (MessageBox.Show("Congratulations! you have reached the Destination", "Question", MessageBoxButton.OK) == MessageBoxResult.No)
+                {
+                    int X = 2;
+                }
+                else
+                {
+                    //do yes stuff
+                }
+            }
+            
+            
+
+
+         
+
+
 
         }
 
-        
+
 
     }
 }

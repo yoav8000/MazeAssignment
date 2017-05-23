@@ -6,9 +6,9 @@
              xmlns:local="clr-namespace:TheMazeGui.View.TheUserControl"
              mc:Ignorable="d" 
              d:DesignHeight="500" d:DesignWidth="500">
-    <Viewbox  Height="Auto" VerticalAlignment="Stretch"  HorizontalAlignment="Stretch" Width="Auto">
+    <Viewbox  StretchDirection="Both" Stretch="Uniform" Height="Auto" VerticalAlignment="Stretch"  HorizontalAlignment="Stretch" Width="Auto">
         <Border BorderBrush="Black" BorderThickness="5">
-            <Canvas x:Name="MazeCanvas" Width="500" Height="500" Focusable="True"></Canvas>
+            <Canvas x:Name="MazeCanvas" Width="500" Height="500" ></Canvas>
         </Border>
     </Viewbox>
 </UserControl>

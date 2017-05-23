@@ -6,7 +6,7 @@
        xmlns:TheUserConotrol ="clr-namespace:TheMazeGui.View.TheUserControl" 
         xmlns:local="clr-namespace:TheMazeGui.View.SinglePlayerView"
         mc:Ignorable="d"
-        Title="SinglePlayerGameWindow" Height="600" Width="600">
+         Title="{Binding VM_MazeName}"  Height="600" Width="600">
     <Grid>
         <Button Name="RestartGameButton" Content="Restart Game" HorizontalAlignment="Left" Margin="84,19,0,0" VerticalAlignment="Top" Width="124" Click="RestartGameButton_Click"/>
         <Button Name="MainMenuButton" Content="Main menu" HorizontalAlignment="Left" Margin="365,20,0,0" VerticalAlignment="Top" Width="124" Click="MainMenuButton_Click" RenderTransformOrigin="1.261,0.469"/>

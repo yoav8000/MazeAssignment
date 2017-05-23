@@ -282,26 +282,30 @@ namespace TheMazeGui.Model.TheSinglePlayerModel
                 case Direction.Left:
                     {
                         return ((currentColPosition - 1 >= 0) && ('0' == Maze[(currentRowPosition * int.Parse(Cols)) + currentColPosition - 1]
-                           || '*' == Maze[(currentRowPosition * int.Parse(Cols)) + currentColPosition - 1])
+                           || '*' == Maze[(currentRowPosition * int.Parse(Cols)) + currentColPosition - 1]
+                           || '#' == Maze[(currentRowPosition * int.Parse(Cols)) + currentColPosition - 1])
                      );
                     }
 
                 case Direction.Up:
                     {
                         return ((currentRowPosition - 1 >= 0) && ('0' == Maze[((currentRowPosition - 1) * int.Parse(Cols)) + currentColPosition]
-                            || '*' == Maze[((currentRowPosition - 1) * int.Parse(Cols)) + currentColPosition])
+                            || '*' == Maze[((currentRowPosition - 1) * int.Parse(Cols)) + currentColPosition]
+                            || '#' == Maze[((currentRowPosition - 1) * int.Parse(Cols)) + currentColPosition])
                   );
                     }
                 case Direction.Down:
                     {
                         return ((currentRowPosition + 1 < int.Parse(Rows)) && ('0' == Maze[((currentRowPosition + 1) * int.Parse(Cols)) + currentColPosition]
-                             || '*' == Maze[((currentRowPosition + 1) * int.Parse(Cols)) + currentColPosition])
+                             || '*' == Maze[((currentRowPosition + 1) * int.Parse(Cols)) + currentColPosition]
+                             || '#' == Maze[((currentRowPosition + 1) * int.Parse(Cols)) + currentColPosition])
               );
                     }
                 case Direction.Right:
                     {
                         return ((currentColPosition + 1 < int.Parse(Cols)) &&( '0' == Maze[(currentRowPosition * int.Parse(Cols)) + currentColPosition + 1]
-                              || '*' == Maze[(currentRowPosition * int.Parse(Cols)) + currentColPosition + 1])
+                              || '*' == Maze[(currentRowPosition * int.Parse(Cols)) + currentColPosition + 1]
+                              || '#' == Maze[(currentRowPosition * int.Parse(Cols)) + currentColPosition + 1])
                         );
                     }     
             }

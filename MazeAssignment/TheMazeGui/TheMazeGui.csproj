@@ -152,5 +152,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Resources\destinationimage.PNG" />
+    <Resource Include="Resources\minionphoto.PNG" />
+    <Resource Include="Resources\the maze.jpg" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
