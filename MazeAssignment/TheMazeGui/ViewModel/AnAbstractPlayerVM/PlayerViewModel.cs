@@ -17,6 +17,12 @@ namespace TheMazeGui.ViewModel.AnAbstractPlayerVM
         public PlayerViewModel(PlayerModel model)
         {
             this.playerModel = model;
+
+            playerModel.ConnectionErrorOccurred += delegate (object sender, PropertyChangedEventArgs e)
+            {
+                NotifyConnectionError("VM_" + "IsEnabled");
+            };
+
             playerModel.PropertyChanged += delegate (object sender, PropertyChangedEventArgs e)
             {
                 NotifyPropertyChanged("VM_" + e.PropertyName);
@@ -25,7 +31,21 @@ namespace TheMazeGui.ViewModel.AnAbstractPlayerVM
 
        
 
-      
+        public bool Is_Enabled
+        {
+            get
+            {
+                return playerModel.Is_Enabled;
+            }
+        }
+
+      public string VM_ConnectionError
+        {
+            get
+            {
+                return playerModel.ConnectionError;
+            }
+        }
 
         public PlayerModel PlayerModel
         {

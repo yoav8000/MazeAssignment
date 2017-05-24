@@ -31,6 +31,7 @@ namespace TheMazeGui.View.TheUserControl
         private Rectangle playerPositionRectangle;
         private double rectangleHeight;
         private double rectanglWidth;
+       
 
 
         public double RectangleHeight
@@ -81,6 +82,17 @@ namespace TheMazeGui.View.TheUserControl
             set
             {
                 SetValue(PlayerPositionProperty, value);
+            }
+        }
+        public string ConnectionError
+        {
+            get
+            {
+                return (string)GetValue(ConnectionErrorProperty);
+            }
+            set
+            {
+                SetValue(ConnectionErrorProperty, value);
             }
         }
 
@@ -150,6 +162,12 @@ namespace TheMazeGui.View.TheUserControl
             int y = int.Parse(arr[0]);
             return y;
         }
+
+        public static readonly DependencyProperty ConnectionErrorProperty = DependencyProperty.Register(//added
+                  "ConnectionError",
+                  typeof(string),
+                  typeof(TheMazeBoard),
+                  null);
 
         public static readonly DependencyProperty MazeProperty = DependencyProperty.Register(
                   "Maze",

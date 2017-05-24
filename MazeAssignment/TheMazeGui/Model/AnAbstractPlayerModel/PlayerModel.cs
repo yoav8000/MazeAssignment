@@ -7,10 +7,11 @@ using System.Threading.Tasks;
 using TheClientDll;
 using MazeLib;
 using TheMazeGui.Model.TheSettingsModel;
+using TheMazeGui.ConnectionErrorInterface;
 
 namespace TheMazeGui.Model.AnAbstractPlayerModel
 {
-    public abstract class PlayerModel : IClientModel
+    public abstract class PlayerModel : IClientModel ,INotifyConnectionError
     {
 
         private string mazeName;
@@ -25,25 +26,35 @@ namespace TheMazeGui.Model.AnAbstractPlayerModel
         private volatile bool stop;
         Maze resultMaze;
         private Position playerPosition;
+        private string connectionError;
+        private bool isEnabled;
+
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        public event CriticalErrorHandler ConnectionErrorOccurred;
 
-
+        
         public PlayerModel(ISettingsModel settingsModel)
         {
-            //myClient = new SinglePlayerClient();
             IpAddress = settingsModel.ServerIp;
             PortNumber = settingsModel.ServerPort;
-            //SinglePlayerClient.setNetworkStat(IpAddress, PortNumber);
-           // SearchAlgorithm = settingsModel.SearchAlgorithm;
+            Is_Enabled = true;
         }
+
+
 
 
         public void Connect(string ip, int port)
         {
-            this.myClient.CreateNewConnection(ip, port);
+           string result = this.myClient.CreateNewConnection(ip, port);
             Stop = false;
+            if (result.Contains("ConnectionError"))
+            {
+                Is_Enabled = false;
+                ConnectionError = result;
+               
+            }
         }
 
 
@@ -55,17 +66,58 @@ namespace TheMazeGui.Model.AnAbstractPlayerModel
 
         public string RecieveMessageFromServer()
         {
-            return  myClient.Read();
+            if (Is_Enabled)
+            {
+                string resultFromServer = myClient.Read();
+                if (resultFromServer.Contains("ConnectionError"))
+                {
+                    Is_Enabled = false;
+                    ConnectionError = resultFromServer;
+                }
+                return resultFromServer;
+            }
+            return null;
         }
 
         public void SendMessageToServer(string message)
         {
-            myClient.Write(message);
+           string result = myClient.Write(message);
+            if (result.Contains("ConnectionError"))
+            {
+                Is_Enabled = false;
+                ConnectionError = result;
+            }
         }
 
         public void Start()
         {
             throw new NotImplementedException();
+        }
+
+        public string ConnectionError
+        {
+            get
+            {
+                return this.connectionError;
+            }
+            set
+            {
+                this.connectionError = value;
+                this.isEnabled = false;
+                NotifyConnectionError("ConnectionError");
+            }
+        }
+
+        public bool Is_Enabled
+        {
+            get
+            {
+                return this.isEnabled;
+            }
+            set
+            {
+                isEnabled = value;
+            }
         }
 
 
@@ -78,6 +130,7 @@ namespace TheMazeGui.Model.AnAbstractPlayerModel
             set
             {
                 this.stop = value;
+                NotifyPropertyChanged("MazeName");
             }
         }
 
@@ -236,6 +289,15 @@ namespace TheMazeGui.Model.AnAbstractPlayerModel
             }
         }
 
+
+        public void NotifyConnectionError(string message)
+        {
+            if (this.ConnectionErrorOccurred != null)
+            {
+                this.ConnectionErrorOccurred(this, new PropertyChangedEventArgs(message));
+            }
+        }
+
         public void MovePlayer(string keyDirection)
         {
 
@@ -320,7 +382,7 @@ namespace TheMazeGui.Model.AnAbstractPlayerModel
             }
             return false;
         }
-
+ 
 
     }
 }

@@ -35,13 +35,26 @@ namespace TheMazeGui.View.SinglePlayerView
             
         }
 
+        protected override void OnClosed(EventArgs e)
+        {
+            MainWindow window = new MainWindow();
+            window.ShowDialog();
+        }
+
+
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             
 
             SinglePlayerGameWindow game = new SinglePlayerGameWindow(MazeSettingsUC.txtMazeName.Text, int.Parse(MazeSettingsUC.txtMazeRows.Text), int.Parse(MazeSettingsUC.txtMazeCols.Text));
             this.Hide();
-            game.ShowDialog();
+            try { 
+                game.ShowDialog();
+            }
+            catch
+            {
+
+            }
             Close();
         }
 

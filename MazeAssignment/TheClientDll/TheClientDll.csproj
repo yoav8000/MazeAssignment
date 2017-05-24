@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MultiPlayerClient.cs" />
     <Compile Include="SinglePlayerClient.cs" />
     <Compile Include="IClient.cs" />
     <Compile Include="MessageReceiver.cs" />

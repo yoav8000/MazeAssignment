@@ -56,12 +56,21 @@ namespace TheClientDll
         }
 
 
-        public void Write(string command)
+        public string Write(string command)
         {
-            if (command != null && command != " ")
+            try
             {
-                StreamWriter.WriteLine(command);
-                StreamWriter.Flush();
+                if (command != null && command != " ")
+                {
+                    StreamWriter.WriteLine(command);
+                    StreamWriter.Flush();
+                }
+                return "";
+
+            }
+            catch
+            {
+                return "ConnectionError";
             }
 
         }

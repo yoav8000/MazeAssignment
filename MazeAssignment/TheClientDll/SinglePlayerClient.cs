@@ -27,10 +27,10 @@ namespace TheClientDll
             this.sender = new MessageSender(null);
         }
 
-        public void CreateNewConnection(string ep, int port)
+        public string CreateNewConnection(string ep, int port)
         {
 
-            if (ep!= null)
+            if (ep != null)
             {
                 this.portNumber = port;
                 this.ep = ep;
@@ -38,11 +38,20 @@ namespace TheClientDll
             communicate = true;
             TheClient = new TcpClient();
             IPEndPoint endPoint = new IPEndPoint(IPAddress.Parse(ep), port);
-            TheClient.Connect(endPoint);    //connect to the server
-            this.stream = TheClient.GetStream();
-            Sender.Stream = Stream;
-            Receiver.Stream = Stream;
+            try
+            {
+                TheClient.Connect(endPoint);    //connect to the server
+                this.stream = TheClient.GetStream();
+                Sender.Stream = Stream;
+                Receiver.Stream = Stream;
+                return "";
+            }
+            catch
+            {
+                return "ConnectionError";
+            }
         }
+
 
         public void Disconnect()
         {
@@ -56,14 +65,19 @@ namespace TheClientDll
             return result; // check what about null.
         }
 
-        public void Write(string command)
+        public string Write(string command)
         {
+            string result = null;
             if (!communicate)
             {
-                CreateNewConnection(this.ep,this.portNumber);
+                result = CreateNewConnection(this.ep,this.portNumber);
             }
-            sender.Write(command);
-            communicate = false;
+            if (!result.Contains("ConnectionError"))
+            {
+                sender.Write(command);
+                communicate = false;
+            }
+            return result;
         }
 
         public void setNetworkStat(string ip, int port)

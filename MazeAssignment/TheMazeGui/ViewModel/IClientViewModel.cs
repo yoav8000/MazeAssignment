@@ -4,8 +4,9 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TheMazeGui.ConnectionErrorInterface;
 
 namespace TheMazeGui.ViewModel
 {
-    public interface IClientViewModel:INotifyPropertyChanged{}
+    public interface IClientViewModel:INotifyPropertyChanged, INotifyConnectionError {}
 }

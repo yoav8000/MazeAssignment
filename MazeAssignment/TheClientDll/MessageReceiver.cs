@@ -73,7 +73,7 @@ namespace TheClientDll
 
             catch
             {
-                return null;
+                return "ConnectionError";
             }
         }
 

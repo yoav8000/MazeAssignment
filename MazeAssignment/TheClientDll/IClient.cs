@@ -9,8 +9,8 @@ namespace TheClientDll
 {
     public interface IClient
     {
-        void CreateNewConnection(string ep, int port);
-        void Write(string command);
+        string CreateNewConnection(string ep, int port);
+        string Write(string command);
         string Read(); 
         void Disconnect();
         void setNetworkStat(string ip, int port);

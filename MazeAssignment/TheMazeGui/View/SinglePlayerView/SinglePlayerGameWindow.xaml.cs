@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,15 +24,36 @@ namespace TheMazeGui.View.SinglePlayerView
     public partial class SinglePlayerGameWindow : Window
     {
         private SinglePlayerViewModel vm;
-
+       
 
         public SinglePlayerGameWindow(string name, int rows, int cols)
         {
+          
             vm = new SinglePlayerViewModel(new SinglePlayerModel(new SettingsModel()));
-
-            vm.StartNewGame(name, rows, cols);
             this.DataContext = this.vm;//check if it should be before initialization.
-            InitializeComponent();
+            vm.ConnectionErrorOccurred += delegate (object sender, PropertyChangedEventArgs e)
+            {
+
+                if (MessageBox.Show("There was an error with the connection to the server", "Connection Error", MessageBoxButton.OK) == MessageBoxResult.OK)
+                {
+                    
+                }
+
+            };
+            vm.StartNewGame(name, rows, cols);
+            if (vm.Is_Enabled)
+            {
+                InitializeComponent();
+            }
+            else
+            {
+                Close();
+            }
+
+
+            // this.DataContext = this.vm;//check if it should be before initialization.
+
+
 
 
         }
@@ -64,8 +86,8 @@ namespace TheMazeGui.View.SinglePlayerView
             {
 
                 Close();
-                MainWindow mainWin = new MainWindow();
-                mainWin.ShowDialog();
+               // MainWindow mainWin = new MainWindow();
+                //mainWin.ShowDialog();
 
             }
         }
