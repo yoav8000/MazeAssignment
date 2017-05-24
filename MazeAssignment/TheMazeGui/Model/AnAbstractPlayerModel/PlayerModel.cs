@@ -78,7 +78,7 @@ namespace TheMazeGui.Model.AnAbstractPlayerModel
             }
             return null;
         }
-
+        //
         public void SendMessageToServer(string message)
         {
            string result = myClient.Write(message);
